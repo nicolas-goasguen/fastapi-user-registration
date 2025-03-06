@@ -13,6 +13,8 @@ services:
       - default
     ports:
       - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     env_file:
       - .env
 
@@ -30,3 +32,6 @@ services:
       - ./api/app:/app
     env_file:
       - .env
+
+volumes:
+  pgdata:
