@@ -2,9 +2,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api.main import api_router
 from app.core.config import settings
 from app.core.db import database
+from app.routers.users import router as users_router
 
 
 @asynccontextmanager
@@ -18,4 +18,5 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     lifespan=lifespan,
 )
-app.include_router(api_router)
+
+app.include_router(users_router)
