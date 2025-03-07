@@ -6,10 +6,6 @@ class UserRegister(BaseModel):
     password: str
 
 
-class UserActivate(BaseModel):
-    code: str
-
-
 class UserResponse(BaseModel):
     id: int
     email: str

@@ -1,8 +1,8 @@
 import random
 from email.message import EmailMessage
 
-import bcrypt
 import aiosmtplib
+import bcrypt
 
 from app.core.config import settings
 
@@ -24,8 +24,8 @@ def generate_4_digits():
 async def send_email(user_email, code: str):
     from_ = "registration@example.com"
     to_ = user_email
-    subject = f"Your validation code: {code}"
-    body = f"Please use this code to validate your registration: {code}. This code is valid for 1 minute."
+    subject = f"Your verification code: {code}"
+    body = f"Please use this code to verify your registration: {code}. This code is valid for 1 minute."
 
     message = EmailMessage()
     message["From"] = from_

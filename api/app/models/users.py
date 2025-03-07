@@ -10,7 +10,7 @@ class UserModel(BaseModel):
     is_active: bool
 
 
-class ActivationCodeModel(BaseModel):
+class VerificationCodeModel(BaseModel):
     id: int
     user_id: str
     code: str
