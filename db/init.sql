@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash TEXT NOT NULL,
     is_active BOOLEAN DEFAULT FALSE
 );
-CREATE TABLE IF NOT EXISTS verification_codes (
+CREATE TABLE IF NOT EXISTS activation_codes (
     id SERIAL PRIMARY KEY,
-    email email_address REFERENCES users(email) ON DELETE CASCADE,
+    user_id SERIAL REFERENCES users(id) ON DELETE CASCADE,
     code code_4_digits NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
