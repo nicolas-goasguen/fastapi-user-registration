@@ -1,0 +1,7 @@
+fastapi[standard]
+pydantic
+pydantic-settings
+asyncpg
+databases
+bcrypt
+aiosmtplib
