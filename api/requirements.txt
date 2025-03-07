@@ -4,3 +4,4 @@ pydantic-settings
 asyncpg
 databases
 bcrypt
+aiosmtplib

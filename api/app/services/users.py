@@ -1,5 +1,5 @@
 from app.core.db import database
-from app.core.utils import hash_password, generate_4_digits
+from app.core.utils import hash_password, generate_4_digits, send_email
 from app.models.users import UserModel
 from app.schemas.users import UserRegister
 
@@ -50,6 +50,7 @@ async def register_user(user_in: UserRegister):
             "code": code
         })
 
+        await send_email(user.email, code)
 
 async def activate_user(user_id: int, code: str):
     """

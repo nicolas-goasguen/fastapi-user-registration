@@ -9,6 +9,7 @@ ENV_FILE = BASE_DIR / ".env"
 class Settings(BaseSettings):
     # PROJECT
     PROJECT_NAME: str = "User Registration API"
+
     # DATABASE
     POSTGRES_SERVER: str
     POSTGRES_PORT: int
@@ -16,6 +17,12 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     DATABASE_URL: str
+
+    # SMTP
+    SMTP_PORT: int
+    SMTP_WEB_PORT: int
+    SMTP_USER: str
+    SMTP_PASSWORD: str
 
     class Config:
         env_file = ENV_FILE

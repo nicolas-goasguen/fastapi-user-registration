@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from aiosmtplib import SMTPException
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
@@ -50,7 +51,13 @@ async def register_user(user_in: UserRegister):
             detail="Email is already in use."
         )
 
-    await users_services.register_user(user_in)
+    try:
+        await users_services.register_user(user_in)
+    except SMTPException:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The validation email could not be sent. Please try registering again later."
+        )
 
     return {"message": "User registered successfully."}
 

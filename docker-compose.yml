@@ -34,5 +34,17 @@ services:
     env_file:
       - .env
 
+  mail:
+    image: maildev/maildev
+    restart: always
+    networks:
+      - default
+    ports:
+      - "${SMTP_PORT}:1025"
+      - "${SMTP_WEB_PORT}:1080"
+    environment:
+      - MAILDEV_INCOMING_USER=${SMTP_USER}
+      - MAILDEV_INCOMING_PASS=${SMTP_PASSWORD}
+
 volumes:
   pgdata:
