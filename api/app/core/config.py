@@ -1,14 +1,10 @@
-from pathlib import Path
-
 from pydantic_settings import BaseSettings
-
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-ENV_FILE = BASE_DIR / ".env"
 
 
 class Settings(BaseSettings):
     # PROJECT
     PROJECT_NAME: str = "User Registration API"
+    ENVIRONMENT: str
 
     # DATABASE
     POSTGRES_SERVER: str
@@ -23,10 +19,6 @@ class Settings(BaseSettings):
     SMTP_WEB_PORT: int
     SMTP_USER: str
     SMTP_PASSWORD: str
-
-    class Config:
-        env_file = ENV_FILE
-        env_file_encoding = "utf-8"
 
 
 settings = Settings()

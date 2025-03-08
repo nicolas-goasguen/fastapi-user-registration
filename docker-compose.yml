@@ -1,14 +1,16 @@
+name: ${PROJECT_NAME}-${ENVIRONMENT}
+
 services:
 
   db:
     image: postgres:17
     restart: always
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
+    environment:
+      - POSTGRES_SERVER=${POSTGRES_SERVER}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
       - default
     ports:
@@ -16,12 +18,18 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    env_file:
-      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   api:
     build: ./api
     restart: always
+    env_file:
+      - .env.${ENVIRONMENT}
     depends_on:
       db:
         condition: service_healthy
@@ -31,20 +39,18 @@ services:
       - "${API_PORT}:80"
     volumes:
       - ./api/app:/app
-    env_file:
-      - .env
 
   mail:
     image: maildev/maildev
     restart: always
+    environment:
+      - MAILDEV_INCOMING_USER=${SMTP_USER}
+      - MAILDEV_INCOMING_PASS=${SMTP_PASSWORD}
     networks:
       - default
     ports:
       - "${SMTP_PORT}:1025"
       - "${SMTP_WEB_PORT}:1080"
-    environment:
-      - MAILDEV_INCOMING_USER=${SMTP_USER}
-      - MAILDEV_INCOMING_PASS=${SMTP_PASSWORD}
 
 volumes:
   pgdata:
