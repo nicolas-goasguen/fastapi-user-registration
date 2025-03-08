@@ -43,7 +43,7 @@ async def read_current_user(
     return user
 
 
-@router.post("/register")
+@router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_user(user_in: UserRegister):
     user = await users_services.get_user_by_email(user_in.email)
 
@@ -63,7 +63,7 @@ async def register_user(user_in: UserRegister):
     return {"message": "User registered. Check your email to activate it."}
 
 
-@router.patch("/activate")
+@router.patch("/activate", status_code=status.HTTP_200_OK)
 async def activate_user(
         credentials: Annotated[HTTPBasicCredentials, Depends(security)],
         verification_code: str
@@ -78,7 +78,7 @@ async def activate_user(
         )
     if user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="User already activated."
         )
 
