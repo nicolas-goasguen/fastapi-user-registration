@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from app.core.utils import verify_password
-from app.schemas.users import UserRegister, UserResponse
+from app.schemas.users import UserRegister, UserActivate, UserResponse
 from app.services import users as users_services
 
 router = APIRouter(
@@ -66,7 +66,7 @@ async def register_user(user_in: UserRegister):
 @router.patch("/activate", status_code=status.HTTP_200_OK)
 async def activate_user(
         credentials: Annotated[HTTPBasicCredentials, Depends(security)],
-        verification_code: str
+        data: UserActivate
 ):
     user = await users_services.get_user_by_email(credentials.username)
 
@@ -82,7 +82,7 @@ async def activate_user(
             detail="User already activated."
         )
 
-    result = await users_services.activate_user(user.id, verification_code)
+    result = await users_services.activate_user(user.id, data.verification_code)
 
     if result is None:
         raise HTTPException(
