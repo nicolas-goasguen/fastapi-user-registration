@@ -5,3 +5,7 @@ asyncpg
 databases
 bcrypt
 aiosmtplib
+httpx
+pytest
+pytest_asyncio
+asgi_lifespan

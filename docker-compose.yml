@@ -12,7 +12,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
-      - default
+      - custom-network
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
@@ -25,6 +25,18 @@ services:
       retries: 5
       start_period: 30s
 
+  mail:
+    image: maildev/maildev
+    restart: always
+    environment:
+      - MAILDEV_INCOMING_USER=${SMTP_USER}
+      - MAILDEV_INCOMING_PASS=${SMTP_PASSWORD}
+    networks:
+      - custom-network
+    ports:
+      - "${SMTP_PORT}:1025"
+      - "${SMTP_WEB_PORT}:1080"
+
   api:
     build: ./api
     restart: always
@@ -33,24 +45,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mail:
+        condition: service_started
     networks:
-      - default
+      - custom-network
     ports:
       - "${API_PORT}:80"
     volumes:
       - ./api/app:/app
 
-  mail:
-    image: maildev/maildev
-    restart: always
-    environment:
-      - MAILDEV_INCOMING_USER=${SMTP_USER}
-      - MAILDEV_INCOMING_PASS=${SMTP_PASSWORD}
-    networks:
-      - default
-    ports:
-      - "${SMTP_PORT}:1025"
-      - "${SMTP_WEB_PORT}:1080"
+networks:
+  custom-network:
+    driver: bridge
 
 volumes:
   pgdata:

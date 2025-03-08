@@ -5,4 +5,5 @@ COPY ./requirements.txt /requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /requirements.txt
 COPY ./app /app
 
-CMD ["fastapi", "run", "main.py", "--port", "80"]
+RUN chmod +x ./start.sh
+CMD ["/bin/bash", "start.sh"]
