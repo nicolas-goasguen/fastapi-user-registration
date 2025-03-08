@@ -19,7 +19,6 @@ async def client(app):
             transport=httpx.ASGITransport(app=app),
             base_url="http://api"
     ) as client:
-        # client.get_io_loop = asyncio.get_running_loop
         yield client
 
 
