@@ -5,7 +5,6 @@ from asgi_lifespan import LifespanManager
 
 from app.main import app as fastapi_app
 from app.core.utils import generate_4_digits
-
 from app.tests.assertions import (
     assert_register_ok,
     assert_register_ko_already_registered,
@@ -16,7 +15,7 @@ from app.tests.assertions import (
     assert_activate_ko_expired_verification_code,
     assert_only_one_email_sent,
 )
-from app.tests.tools import get_last_code, get_all_emails
+from app.tests.tools import get_code_from_last_email
 
 
 @pytest_asyncio.fixture
@@ -61,7 +60,7 @@ async def test_activate(client, random_credentials, random_auth, emails):
     assert_register_ok(response_register)
     await assert_only_one_email_sent(emails)
 
-    verification_code = await get_last_code()
+    verification_code = await get_code_from_last_email()
 
     response_activate = await client.patch(
         "/users/activate",
@@ -82,7 +81,7 @@ async def test_activate_invalid_credentials(
     assert_register_ok(response_register)
     await assert_only_one_email_sent(emails)
 
-    verification_code = await get_last_code()
+    verification_code = await get_code_from_last_email()
 
     response_activate = await client.patch(
         "/users/activate",
@@ -103,7 +102,7 @@ async def test_activate_already_activated(
     assert_register_ok(response_register)
     await assert_only_one_email_sent(emails)
 
-    verification_code = await get_last_code()
+    verification_code = await get_code_from_last_email()
 
     response_activate_1 = await client.patch(
         "/users/activate",
@@ -131,7 +130,7 @@ async def test_activate_invalid_verification_code(
     assert_register_ok(response_register)
     await assert_only_one_email_sent(emails)
 
-    verification_code = await get_last_code()
+    verification_code = await get_code_from_last_email()
 
     invalid_code = verification_code
     while invalid_code == verification_code:
@@ -157,7 +156,7 @@ async def test_activate_expired_verification_code(
     assert_register_ok(response_register)
     await assert_only_one_email_sent(emails)
 
-    verification_code = await get_last_code()
+    verification_code = await get_code_from_last_email()
 
     # TODO: update code created_at to past
 

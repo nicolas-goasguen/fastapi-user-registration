@@ -32,12 +32,16 @@ def assert_activate_ko_invalid_credentials(response):
 
 def assert_activate_ko_invalid_verification_code(response):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {"detail": "Invalid or expired verification code."}
+    assert response.json() == {
+        "detail": "Invalid or expired verification code."
+    }
 
 
 def assert_activate_ko_expired_verification_code(response):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {"detail": "Invalid or expired verification code."}
+    assert response.json() == {
+        "detail": "Invalid or expired verification code."
+    }
 
 
 def assert_activate_ko_already_activated(response):

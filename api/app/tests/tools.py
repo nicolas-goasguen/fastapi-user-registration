@@ -16,11 +16,9 @@ async def get_all_emails():
     ) as client:
         response = await client.get(MAILDEV_API_URL)
         response.raise_for_status()
-
         emails = response.json()
         if not emails:
             return []
-
         return emails
 
 
@@ -31,7 +29,7 @@ async def get_last_email():
     return emails[-1]
 
 
-async def get_last_code():
+async def get_code_from_last_email():
     last_email = await get_last_email()
     if not last_email:
         return None

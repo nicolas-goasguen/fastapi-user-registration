@@ -1,7 +1,9 @@
-import pytest
 import httpx
+import pytest
 
-from app.tests.tools import get_all_emails, get_random_email, get_random_password
+from app.tests.tools import (
+    get_all_emails, get_random_email, get_random_password
+)
 
 
 @pytest.fixture
