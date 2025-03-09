@@ -7,7 +7,7 @@ import httpx
 
 from app.core.config import settings
 
-MAILDEV_API_URL = "http://mail:1080/email"
+MAILDEV_API_URL = f"http://mail:{settings.SMTP_WEB_PORT}/email"
 
 
 async def get_all_emails():
