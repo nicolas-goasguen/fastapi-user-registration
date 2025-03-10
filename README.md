@@ -8,10 +8,50 @@ This repository contains an implementation of API user registration and verifica
 * The user has only one minute to use this code. An error is raised if used after that.
 
 ## Architecture
+
+### Docker services architecture
 This backend project is structured in Docker services as follows:
 - **FastAPI**: The Python backend API to handle user registration and activation.
 - **PostgreSQL**: The SQL database to store users and verification data.
 - **MailDev**: The SMTP testing service to simulate user email verification.
+
+```mermaid
+architecture-beta
+    service localhost(server)[My Machine]
+  
+    group docker_compose[Docker Compose]
+    service api(server)[FastAPI] in docker_compose
+    service db(database)[PostgreSQL] in docker_compose
+    service email(server)[MailDev] in docker_compose
+    junction junction_host_email
+
+    api:R <--> L:db
+    api:B --> T:email
+    
+    localhost:R <--> L:api
+    localhost:B <-- T:junction_host_email
+    junction_host_email:R -- L:email
+```
+
+### API code structure
+
+```mermaid
+graph TD;
+    subgraph API code structure
+        main -->|Imports| core
+        core --> config
+        core --> db
+        core --> utils
+
+        main -->|Runs| app
+        app -->|Defines routers| routers
+        routers -->|Define endpoints| users_routes[routers/users]
+        schemas -->|Define schemas| users_schemas[schemas/users]
+        users_routes -->|Use schemas| users_schemas
+        users_routes <-->|Calls services| users_services
+        services -->|Define services| users_services[services/users]
+    end
+```
 
 ## Setup and usage
 
@@ -56,13 +96,13 @@ Once running, access the services from your web browser:
 To run the tests on the environment:
 
 ```console
-docker-compose --env_file .env.example exec api pytest
+foo@bar:~$ docker-compose --env_file .env.example exec api pytest
 ```
 
 If using a custom environment:
 
 ```console
-docker-compose --env-file .env.custom exec api pytest
+foo@bar:~$ docker-compose --env-file .env.custom exec api pytest
 ```
 
 You'll now see the logs of your running services in the terminal.
@@ -71,13 +111,13 @@ You'll now see the logs of your running services in the terminal.
 To stop the running services:
 
 ```console
-docker-compose --env_file .env.example down
+foo@bar:~$ docker-compose --env_file .env.example down
 ```
 
 If using a custom environment:
 
 ```console
-docker-compose --env-file .env.custom down
+foo@bar:~$ docker-compose --env-file .env.custom down
 ```
 
 ### Clean the environment
@@ -88,13 +128,13 @@ docker-compose --env-file .env.custom down
 To stop and remove persistent storage volumes:
 
 ```console
-docker-compose --env_file .env.example down -v
+foo@bar:~$ docker-compose --env_file .env.example down -v
 ```
 
 If using a custom environment:
 
 ```console
-docker-compose --env-file .env.custom down -v
+foo@bar:~$ docker-compose --env-file .env.custom down -v
 ```
 
 ## License
