@@ -7,6 +7,8 @@ This repository contains an implementation of API user registration and verifica
 * Activate a user account with the 4 digits code received using basic authentication.
 * The user has only one minute to use this code. An error is raised if used after that.
 
+## 
+
 ## Architecture
 
 ### Docker services architecture
@@ -17,7 +19,7 @@ This backend project is structured in Docker services as follows:
 
 ```mermaid
 architecture-beta
-    service localhost(server)[My Machine]
+    service localhost(server)[Host]
   
     group docker_compose[Docker Compose]
     service api(server)[FastAPI] in docker_compose
@@ -33,7 +35,14 @@ architecture-beta
     junction_host_email:R -- L:email
 ```
 
-### API code structure
+### API code architecture
+
+The API code is structured in multiple modules:
+- main: Entry point that imports core modules and runs the FastAPI app.
+- core: Contains essential components like configuration, database connection, and utilities.
+- routers: Contains API routes, including user routes.
+- schemas: Contains API models, including user schemas.
+- services: Handles business logic, such as user services. Services are called by routes.
 
 ```mermaid
 graph TD;
@@ -150,6 +159,16 @@ foo@bar:~$ docker-compose --env_file .env.example down -v
   foo@bar:~$ docker-compose --env-file <custom_env_file> down -v
   ```
 </details>
+
+## Possible improvements
+
+Here are some potential improvements for this project:
+- **Validation**: Add much more validation for emails and passwords (at both database and schemas levels).
+- **Add models**: Use models to manage database CRUD for a cleaner architecture.
+- **Documentation**: Add docstrings on schemas, methods, routes and returned values for API documentation.
+- **Error handling**: Improve error management in routes, especially for database connection failures.
+- **Testing coverage**: Improve test coverage with more cases (including data validation).
+- **Security**: Implement some advanced strategies to protect against potential attacks (Timing Attack, DDoS, ...).
 
 ## License
 The User Registration API is licensed under the terms of the MIT license.
