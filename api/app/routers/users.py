@@ -18,6 +18,18 @@ security = HTTPBasic()
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_user(user_in: UserRegister):
+    """
+    Register a new user and send a verification email.
+
+    **Parameters**:
+    - **email**: The email of the user (must be unique).
+    - **password**: The password of the user.
+
+    **Responses**:
+    - **201 Created**: User registered successfully.
+    - **400 Bad Request**: Email already in use.
+    - **503 Service Unavailable**: Failed to send verification email.
+    """
     user = await users_services.get_user_by_email(user_in.email)
 
     if user:
@@ -41,6 +53,20 @@ async def activate_user(
         credentials: Annotated[HTTPBasicCredentials, Depends(security)],
         data: UserActivate
 ):
+    """
+    Activate authenticated user using a verification code.
+
+    **Parameters**
+    - **username (from Basic Auth)**: The email of the user.
+    - **password (from Basic Auth)**: The password of the user.
+    - **verification_code**: The activation code (received by email).
+
+    **Responses**:
+    - **200 OK**: User activated successfully.
+    - **401 Unauthorized**: Invalid credentials.
+    - **403 Forbidden**: User already activated.
+    - **400 Bad Request**: Invalid or expired verification code.
+    """
     user = await users_services.get_user_by_email(credentials.username)
 
     if not user or not verify_password(credentials.password,

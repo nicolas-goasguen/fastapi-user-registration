@@ -53,7 +53,7 @@ graph TD;
     end
 ```
 
-## Setup and usage
+## Setup
 
 ### Prerequisites
 - Install [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/).
@@ -62,10 +62,12 @@ graph TD;
 By default, the project uses the `.env.example` file. If needed, you can create a custom environment file.
 
 ```console
-foo@bar:~$ cp .env.example .env.custom
+foo@bar:~$ cp .env.example <custom_env_file>
 ```
 
-Then, modify the `.env.custom` file to fit your needs.
+Then, open and modify the custom environment file to fit your needs.
+
+## Usage 
 
 ### Start the environment
 
@@ -78,15 +80,18 @@ To start the application using the default configuration:
 foo@bar:~$ docker-compose --env-file .env.example up --build
 ```
 
-If you created a custom `.env` file, specify it as follows:
-
-```console
-foo@bar:~$ docker-compose --env-file .env.custom up --build
-```
-
 Once running, access the services from your web browser:
 - **API**: `http://localhost:<EXPOSED_API_PORT>/docs`
 - **Mail**: `http://localhost:<EXPOSED_SMTP_WEB_PORT>`
+
+<details>
+  <summary>(Alternative) Command for custom environment file</summary>
+  If you have created a custom environment file, specify it as follows:
+
+  ```console
+  foo@bar:~$ docker-compose --env-file <custom_env_file> up --build
+  ```
+</details>
 
 ### Run tests
 
@@ -99,13 +104,16 @@ To run the tests on the environment:
 foo@bar:~$ docker-compose --env_file .env.example exec api pytest
 ```
 
-If using a custom environment:
-
-```console
-foo@bar:~$ docker-compose --env-file .env.custom exec api pytest
-```
-
 You'll now see the logs of your running services in the terminal.
+
+<details>
+  <summary>(Alternative) Command for custom environment file</summary>
+  If you have created a custom environment file, specify it as follows:
+
+  ```console
+  foo@bar:~$ docker-compose --env-file <custom_env_file> exec api pytest
+  ```
+</details>
 
 ### Stop the environment
 To stop the running services:
@@ -114,11 +122,14 @@ To stop the running services:
 foo@bar:~$ docker-compose --env_file .env.example down
 ```
 
-If using a custom environment:
+<details>
+  <summary>(Alternative) Command for custom environment file</summary>
+  If you have created a custom environment file, specify it as follows:
 
-```console
-foo@bar:~$ docker-compose --env-file .env.custom down
-```
+  ```console
+  foo@bar:~$ docker-compose --env-file <custom_env_file> down
+  ```
+</details>
 
 ### Clean the environment
 
@@ -131,11 +142,14 @@ To stop and remove persistent storage volumes:
 foo@bar:~$ docker-compose --env_file .env.example down -v
 ```
 
-If using a custom environment:
+<details>
+  <summary>(Alternative) Command for custom environment file</summary>
+  If you have created a custom environment file, specify it as follows:
 
-```console
-foo@bar:~$ docker-compose --env-file .env.custom down -v
-```
+  ```console
+  foo@bar:~$ docker-compose --env-file <custom_env_file> down -v
+  ```
+</details>
 
 ## License
 The User Registration API is licensed under the terms of the MIT license.
