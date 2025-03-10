@@ -15,7 +15,7 @@ async def lifespan(fastapi_app: FastAPI):
 
 
 app = FastAPI(
-    title=settings.PROJECT_NAME,
+    title=f"{settings.PROJECT_NAME} - {settings.ENVIRONMENT}",
     lifespan=lifespan,
 )
 

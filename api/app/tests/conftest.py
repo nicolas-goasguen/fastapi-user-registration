@@ -1,6 +1,5 @@
 import httpx
 import pytest
-import pytest_asyncio
 
 from asgi_lifespan import LifespanManager
 
@@ -19,13 +18,13 @@ from app.tests.tools import (
 
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def app():
     async with LifespanManager(fastapi_app) as manager:
         yield manager.app
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def client(app):
     async with httpx.AsyncClient(
             transport=httpx.ASGITransport(app=app),
