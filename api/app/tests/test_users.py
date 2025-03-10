@@ -2,9 +2,7 @@ import pytest
 
 from app.core.utils import generate_4_digits
 from app.tests.assertions import (
-    assert_register_ok,
     assert_register_ko_already_registered,
-    assert_activate_ok,
     assert_activate_ko_invalid_credentials,
     assert_activate_ko_already_activated,
     assert_activate_ko_invalid_verification_code,

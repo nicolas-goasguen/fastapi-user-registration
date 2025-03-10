@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from app.core.utils import verify_password
-from app.schemas.users import UserRegister, UserActivate, UserResponse
+from app.schemas.users import UserRegister, UserActivate
 from app.services import users as users_services
 
 router = APIRouter(

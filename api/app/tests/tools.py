@@ -8,7 +8,6 @@ import httpx
 from app.core.config import settings
 from app.core.db import database
 
-
 MAILDEV_API_URL = f"http://mail:{settings.SMTP_WEB_PORT}/email"
 
 
