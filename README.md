@@ -110,7 +110,7 @@ Once running, access the services from your web browser:
 To run the tests on the environment:
 
 ```console
-foo@bar:~$ docker-compose --env_file .env.example exec api pytest
+foo@bar:~$ docker-compose --env-file .env.example exec api pytest
 ```
 
 You'll now see the logs of your running services in the terminal.
@@ -128,7 +128,7 @@ You'll now see the logs of your running services in the terminal.
 To stop the running services:
 
 ```console
-foo@bar:~$ docker-compose --env_file .env.example down
+foo@bar:~$ docker-compose --env-file .env.example down
 ```
 
 <details>
@@ -148,7 +148,7 @@ foo@bar:~$ docker-compose --env_file .env.example down
 To stop and remove persistent storage volumes:
 
 ```console
-foo@bar:~$ docker-compose --env_file .env.example down -v
+foo@bar:~$ docker-compose --env-file .env.example down -v
 ```
 
 <details>
