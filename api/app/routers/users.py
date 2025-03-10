@@ -16,33 +16,6 @@ router = APIRouter(
 security = HTTPBasic()
 
 
-@router.get("/")
-async def read_all_users():
-    return await users_services.get_all_users()
-
-
-@router.get("/codes")
-async def read_all_verification_codes():
-    return await users_services.get_all_verification_codes()
-
-
-@router.get("/me", response_model=UserResponse)
-async def read_current_user(
-        credentials: Annotated[HTTPBasicCredentials, Depends(security)],
-):
-    user = await users_services.get_user_by_email(credentials.username)
-
-    if not user or not verify_password(
-            credentials.password,
-            user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials."
-        )
-
-    return user
-
-
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_user(user_in: UserRegister):
     user = await users_services.get_user_by_email(user_in.email)

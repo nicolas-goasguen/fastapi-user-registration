@@ -4,22 +4,6 @@ from app.models.users import UserModel
 from app.schemas.users import UserRegister
 
 
-async def get_all_users():
-    """
-    Get all users.
-    """
-    query = "SELECT * FROM users;"
-    return await database.fetch_all(query)
-
-
-async def get_all_verification_codes():
-    """
-    Get all verification codes.
-    """
-    query = "SELECT * FROM verification_codes;"
-    return await database.fetch_all(query)
-
-
 async def get_user_by_email(email: str) -> UserModel:
     """
     Get a specific user by email.
