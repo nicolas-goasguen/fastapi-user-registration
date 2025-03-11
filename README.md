@@ -163,11 +163,11 @@ foo@bar:~$ docker-compose --env-file .env.example down -v
 ## Possible improvements
 
 Here are some potential improvements for this project:
-- **Validation**: Add much more validation for emails and passwords (at both database and schemas levels).
+- **Validation**: Add validation for emails and passwords at both database.
 - **Add models**: Use models to manage database CRUD for a cleaner architecture.
 - **Documentation**: Add docstrings on schemas, methods, routes and returned values for API documentation.
 - **Error handling**: Improve error management in routes, especially for database connection failures.
-- **Testing coverage**: Improve test coverage with more cases (including data validation).
+- **Testing coverage**: Improve test coverage with more cases.
 - **Development**: Add inherited docker-compose for development to mount project as volume and avoid restarting environment to run tests again.
 - **Security**: Implement some advanced strategies to protect against potential attacks (Timing Attack, DDoS, ...).
 
