@@ -16,6 +16,17 @@ async def lifespan(fastapi_app: FastAPI):
 
 app = FastAPI(
     title=f"{settings.PROJECT_NAME} - {settings.ENVIRONMENT}",
+    description="""
+**Overview**
+
+User registration API in Python with FastAPI.
+
+**Features**
+* Create a user with an email and a password.
+* Email the user with a 4 digits code.
+* Activate a user account with the 4 digits code received using basic authentication.
+* The user has only one minute to use this code. An error is raised if used after that.
+""",
     lifespan=lifespan,
 )
 
