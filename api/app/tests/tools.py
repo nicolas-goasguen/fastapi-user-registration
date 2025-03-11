@@ -57,15 +57,9 @@ async def get_last_verification_data(credentials):
 
 def get_random_email():
     random.seed(datetime.now().timestamp())
-    choices = string.ascii_lowercase + string.digits
-    prefix = ''.join(random.choice(choices) for _ in range(15))
+    choices = string.ascii_lowercase
+    prefix = ''.join(random.choice(choices) for _ in range(20))
     return f"{prefix}@test.com"
-
-
-def get_random_password():
-    random.seed(datetime.now().timestamp())
-    choices = string.ascii_letters + string.digits
-    return ''.join(random.choice(choices) for _ in range(20))
 
 
 async def expire_verification_code(verification_data):

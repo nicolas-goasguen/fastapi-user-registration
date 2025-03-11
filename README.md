@@ -168,6 +168,7 @@ Here are some potential improvements for this project:
 - **Documentation**: Add docstrings on schemas, methods, routes and returned values for API documentation.
 - **Error handling**: Improve error management in routes, especially for database connection failures.
 - **Testing coverage**: Improve test coverage with more cases (including data validation).
+- **Development**: Add inherited docker-compose for development to mount project as volume and avoid restarting environment to run tests again.
 - **Security**: Implement some advanced strategies to protect against potential attacks (Timing Attack, DDoS, ...).
 
 ## License

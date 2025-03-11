@@ -13,7 +13,6 @@ from app.tests.tools import (
     get_all_emails,
     get_last_verification_data,
     get_random_email,
-    get_random_password
 )
 
 
@@ -48,21 +47,47 @@ def random_email():
 
 
 @pytest.fixture
-def random_password():
-    return get_random_password()
+def invalid_email():
+    return "email@test"
 
 
 @pytest.fixture
-def random_credentials(random_email, random_password):
+def valid_password():
+    return "Password123!?"
+
+
+@pytest.fixture
+def invalid_password():
+    return "password"
+
+
+@pytest.fixture
+def random_credentials(random_email, valid_password):
     return {
         "email": random_email,
-        "password": random_password
+        "password": valid_password
     }
 
 
 @pytest.fixture
-def random_auth(random_email, random_password):
-    return httpx.BasicAuth(username=random_email, password=random_password)
+def random_credentials_invalid_email(invalid_email, valid_password):
+    return {
+        "email": invalid_email,
+        "password": valid_password
+    }
+
+
+@pytest.fixture
+def random_credentials_invalid_password(random_email, invalid_password):
+    return {
+        "email": random_email,
+        "password": invalid_password
+    }
+
+
+@pytest.fixture
+def random_auth(random_email, valid_password):
+    return httpx.BasicAuth(username=random_email, password=valid_password)
 
 
 @pytest.fixture
