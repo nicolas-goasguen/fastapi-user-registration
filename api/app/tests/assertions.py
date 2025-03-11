@@ -15,6 +15,31 @@ def assert_register_ko_already_registered(response):
     assert response.json() == {"detail": "Email is already in use."}
 
 
+def assert_register_ko_invalid_email_format(response):
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    response_json = response.json()
+    assert "detail" in response_json
+    assert len(response_json["detail"]) == 1
+    response_detail = response_json["detail"][0]
+    assert response_detail["type"] == "value_error"
+    assert response_detail["loc"] == ["body", "email"]
+
+
+def assert_register_ko_invalid_password_format(response):
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    response_json = response.json()
+    assert "detail" in response_json
+    assert len(response_json["detail"]) == 1
+    response_detail = response_json["detail"][0]
+    assert response_detail["type"] == "value_error"
+    assert response_detail["loc"] == ["body", "password"]
+    assert response_detail["msg"] == (
+        "Value error, The password must be between 6 and 20 characters long "
+        "and include at least one uppercase letter, one lowercase letter, "
+        "one digit, and one special character."
+    )
+
+
 def assert_activate_ok(response):
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"message": "User activated successfully."}
@@ -37,6 +62,17 @@ def assert_activate_ko_expired_verification_code(response):
     assert response.json() == {
         "detail": "Invalid or expired verification code."
     }
+
+
+def assert_activate_ko_invalid_verification_code_format(response):
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    response_json = response.json()
+    assert "detail" in response_json
+    assert len(response_json["detail"]) == 1
+    response_detail = response_json["detail"][0]
+    assert response_detail["type"] == "value_error"
+    assert response_detail["loc"] == ["body", "verification_code"]
+
 
 
 def assert_activate_ko_already_activated(response):
