@@ -163,13 +163,12 @@ foo@bar:~$ docker-compose --env-file .env.example down -v
 ## Possible improvements
 
 Here are some potential improvements for this project:
-- **Validation**: Add validation for emails and passwords at both database.
+- **Validation**: Add validation for emails and passwords in database.
 - **Add models**: Use models to manage database CRUD for a cleaner architecture.
 - **Documentation**: Add docstrings on schemas, methods, routes and returned values for API documentation.
-- **Error handling**: Improve error management in routes, especially for database connection failures.
+- **Error handling**: Improve error management in routes, especially in case of database connection failures.
 - **Testing coverage**: Improve test coverage with more cases.
-- **Development**: Add inherited docker-compose for development to mount project as volume and avoid restarting environment to run tests again.
-- **Security**: Implement some advanced strategies to protect against potential attacks (Timing Attack, DDoS, ...).
+- **Security**: Implement some advanced security strategies to protect against potential attacks (Timing Attack, DDoS, ...).
 
 ## License
 The User Registration API is licensed under the terms of the MIT license.
