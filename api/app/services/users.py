@@ -8,7 +8,7 @@ async def get_user_by_email(email: str) -> UserModel:
     """
     Get a specific user by email.
     """
-    query = "SELECT * FROM users WHERE email = :email;"
+    query = "SELECT * FROM users WHERE email = :email LIMIT 1;"
     return await database.fetch_one(query, {"email": email})
 
 
@@ -48,7 +48,7 @@ async def activate_user(user_id: int, code: str):
             WHERE 
                 user_id = :user_id
                 AND code = :code
-                AND created_at + INTERVAL '1 minute' > NOW()
+                AND created_at > NOW() - INTERVAL '1 minute'
         """
         verification_code = await database.fetch_one(
             query_valid_codes,

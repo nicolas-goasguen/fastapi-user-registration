@@ -63,9 +63,9 @@ async def activate_user(
 
     **Responses**:
     - **200 OK**: User activated successfully.
+    - **400 Bad Request**: Invalid or expired verification code.
     - **401 Unauthorized**: Invalid credentials.
     - **403 Forbidden**: User already activated.
-    - **400 Bad Request**: Invalid or expired verification code.
     """
     user = await users_services.get_user_by_email(credentials.username)
 
