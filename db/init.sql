@@ -19,4 +19,16 @@ CREATE TABLE IF NOT EXISTS verification_codes (
     created_at TIMESTAMP DEFAULT NOW()
 );
  -- speeds up searches for user_id, user_id + code, user_id + code + created_at
+CREATE INDEX idx_verification_codes_created_at ON verification_codes(created_at);
 CREATE INDEX idx_verification_codes_user_id_code_created_at ON verification_codes(user_id, code, created_at);
+ALTER TABLE verification_codes
+    ADD CONSTRAINT chk_created_at_not_in_future CHECK (created_at <= NOW());
+
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+SELECT cron.schedule(
+    '*/5 * * * *',
+    $$
+    DELETE FROM verification_codes
+    WHERE created_at < NOW() - INTERVAL '2 minutes';
+    $$
+);

@@ -3,7 +3,7 @@ name: ${PROJECT_NAME}-${ENVIRONMENT}
 services:
 
   db:
-    image: postgres:17
+    build: ./db
     restart: always
     environment:
       - POSTGRES_PORT=${POSTGRES_PORT}
@@ -21,6 +21,10 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_cron
+      -c cron.database_name=${POSTGRES_DB}
 
   mail:
     image: maildev/maildev
