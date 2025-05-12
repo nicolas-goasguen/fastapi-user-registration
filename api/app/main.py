@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from app.core.config import settings
 from app.core.db import database
-from app.routers.users import router as users_router
+from app.routers.user import router as user_router
 
 
 @asynccontextmanager
@@ -30,4 +30,4 @@ User registration API in Python with FastAPI.
     lifespan=lifespan,
 )
 
-app.include_router(users_router)
+app.include_router(user_router)

@@ -13,7 +13,7 @@ MAILDEV_API_URL = f"http://mail:{settings.SMTP_WEB_PORT}/email"
 
 async def get_all_emails():
     async with httpx.AsyncClient(
-            auth=(settings.SMTP_USER, settings.SMTP_PASS)
+        auth=(settings.SMTP_USER, settings.SMTP_PASS)
     ) as client:
         response = await client.get(MAILDEV_API_URL)
         response.raise_for_status()
@@ -26,14 +26,15 @@ async def get_all_emails():
 async def get_user_new_emails(credentials, emails_before):
     emails_after = await get_all_emails()
     return [
-        email for email in emails_after
+        email
+        for email in emails_after
         if email not in emails_before
-           and email["to"][0]["address"] == credentials["email"]
+        and email["to"][0]["address"] == credentials["email"]
     ]
 
 
 def get_code_from_email(email):
-    code, = re.findall(r'\d+', email["subject"])
+    (code,) = re.findall(r"\d+", email["subject"])
     return code
 
 
@@ -49,16 +50,14 @@ async def get_last_verification_data(credentials):
         ORDER BY created_at DESC
         LIMIT 1;
     """
-    row = await database.fetch_one(
-        query, {"email": credentials["email"]}
-    )
+    row = await database.fetch_one(query, {"email": credentials["email"]})
     return row
 
 
 def get_random_email():
     random.seed(datetime.now().timestamp())
     choices = string.ascii_lowercase
-    prefix = ''.join(random.choice(choices) for _ in range(20))
+    prefix = "".join(random.choice(choices) for _ in range(20))
     return f"{prefix}@test.com"
 
 
