@@ -1,4 +1,5 @@
 from app.core.utils import generate_4_digits
+from app.exceptions import VerificationCodeCrudInsertError
 from app.schemas.verification import VerificationCodeFromDB
 
 
@@ -25,7 +26,7 @@ async def create_code(db, user_id: int) -> VerificationCodeFromDB | None:
     )
 
     if not row:
-        pass  # TODO: raise custom exception
+        raise VerificationCodeCrudInsertError
 
     return VerificationCodeFromDB(**row)
 

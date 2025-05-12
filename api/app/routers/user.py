@@ -16,6 +16,8 @@ router = APIRouter(
 
 security = HTTPBasic()
 
+# TODO: catch exceptions
+
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_user(
@@ -34,10 +36,7 @@ async def register_user(
     - **400 Bad Request**: Email already in use.
     - **503 Service Unavailable**: Failed to send verification email.
     """
-    try:
-        await user_service.register_user(db, user_in)
-    except Exception as e:
-        raise e  # TODO: catch exceptions
+    await user_service.register_user(db, user_in)
     return {"message": "User registered. Please check your email to activate it."}
 
 
@@ -61,10 +60,7 @@ async def activate_user(
     - **401 Unauthorized**: Invalid credentials.
     - **403 Forbidden**: User already activated.
     """
-    try:
-        await user_service.activate_user(db, credentials, verification_in)
-    except Exception as e:
-        raise e  # TODO: catch exceptions
+    await user_service.activate_user(db, credentials, verification_in)
     return {
         "message": "User activated successfully. Please check your email for confirmation."
     }

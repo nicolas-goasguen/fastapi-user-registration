@@ -1,3 +1,4 @@
+from app.exceptions import UserCrudInsertError, UserCrudUpdateIsActiveError
 from app.schemas.user import UserFromDB
 
 
@@ -22,7 +23,7 @@ async def create(db, email: str, password_hash: str) -> UserFromDB | None:
     )
 
     if not row:
-        pass  # TODO: raise custom exception
+        raise UserCrudInsertError
 
     return UserFromDB(**row)
 
@@ -77,6 +78,6 @@ async def update_is_active(
     )
 
     if not row:
-        pass  # TODO: raise custom exception
+        raise UserCrudUpdateIsActiveError
 
     return UserFromDB(**row)

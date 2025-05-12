@@ -7,6 +7,11 @@ from app.core.utils import (
     hash_password,
     send_confirmation_email,
 )
+from app.exceptions import (
+    UserAlreadyRegisteredError,
+    UserAlreadyActivatedError,
+    VerificationCodeInvalidOrExpiredError,
+)
 from app.schemas.user import (
     UserRegister,
     UserResponse,
@@ -22,7 +27,7 @@ async def register_user(db, user_in: UserRegister) -> UserResponse:
     async with db.transaction():
         existing_user = await user_crud.get_by_email(db, user_in.email)
         if existing_user:
-            pass  # TODO: raise custom exception
+            raise UserAlreadyRegisteredError
 
         password_hash = hash_password(user_in.password)
         created_user = await user_crud.create(db, str(user_in.email), password_hash)
@@ -43,15 +48,15 @@ async def activate_user(
     async with db.transaction():
         existing_user = await user_crud.get_by_email(db, credentials.username)
         if existing_user and existing_user.is_active is True:
-            pass  # TODO: raise custom exception
+            raise UserAlreadyActivatedError
 
         valid_verification_code = await verification_crud.get_valid_code(
             db, existing_user.id, verification_code_in.code
         )
         if not valid_verification_code:
-            pass  # TODO: raise custom exception
+            raise VerificationCodeInvalidOrExpiredError
         if valid_verification_code.created_at < datetime.now() - timedelta(minutes=1):
-            pass  # TODO: raise custom exception
+            raise VerificationCodeInvalidOrExpiredError
 
         activated_user = await user_crud.update_is_active(
             db, existing_user.id, is_active=True
