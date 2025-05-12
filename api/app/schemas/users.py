@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, EmailStr, field_validator
 
 from app.core.utils import is_valid_password, is_valid_verification_code
@@ -28,5 +29,12 @@ class UserActivate(BaseModel):
 
 
 class UserResponse(BaseModel):
+    id: int
     email: EmailStr
     is_active: bool
+
+
+class VerificationCodeResponse(BaseModel):
+    id: int
+    code: str
+    created_at: datetime

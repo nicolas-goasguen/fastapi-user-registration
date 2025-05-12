@@ -4,9 +4,11 @@ from aiosmtplib import SMTPException
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-from app.core.utils import verify_password
+from app.core.db import database
+from app.core.utils import verify_password, send_email
 from app.schemas.users import UserRegister, UserActivate
 from app.services import users as users_services
+
 
 router = APIRouter(
     prefix="/users",
@@ -30,22 +32,20 @@ async def register_user(user_in: UserRegister):
     - **400 Bad Request**: Email already in use.
     - **503 Service Unavailable**: Failed to send verification email.
     """
-    user = await users_services.get_user_by_email(user_in.email)
+    async with database.transaction():
+        user = await users_services.get_user_by_email(user_in.email)
 
-    if user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email is already in use."
-        )
+        if user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email is already in use."
+            )
 
-    try:
-        await users_services.register_user(user_in)
-    except SMTPException:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Verification email failed to send. Retry registration later.")
+        user = await users_services.create_user(user_in)
+        verification = await users_services.create_verification_code(user.id)
+        await send_email(user.email, verification.code)
 
-    return {"message": "User registered. Check your email to activate it."}
+        return {"message": "User registered. Please check your email to activate it."}
 
 
 @router.patch("/activate", status_code=status.HTTP_200_OK)

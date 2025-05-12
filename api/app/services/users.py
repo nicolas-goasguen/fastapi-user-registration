@@ -1,10 +1,10 @@
 from app.core.db import database
 from app.core.utils import hash_password, generate_4_digits, send_email
-from app.models.users import UserModel
-from app.schemas.users import UserRegister
+from app.schemas.users import (
+    UserRegister, UserResponse, VerificationCodeResponse
+)
 
-
-async def get_user_by_email(email: str) -> UserModel:
+async def get_user_by_email(email: str) -> UserResponse:
     """
     Get a specific user by email.
     """
@@ -12,29 +12,37 @@ async def get_user_by_email(email: str) -> UserModel:
     return await database.fetch_one(query, {"email": email})
 
 
-async def register_user(user_in: UserRegister):
+async def create_user(user_in: UserRegister) -> UserResponse:
     """
-    Register a new user.
+    Create a new user.
     """
-    async with database.transaction():
-        user_query = "INSERT INTO users (email, password_hash) VALUES (:email, :password_hash);"
-        password_hash = hash_password(user_in.password)
+    user_query = """
+    INSERT INTO users (email, password_hash) 
+    VALUES (:email, :password_hash)
+    RETURNING id, email, is_active;
+    """
+    password_hash = hash_password(user_in.password)
 
-        code_query = "INSERT INTO verification_codes (user_id, code) VALUES (:user_id, :code);"
-        code = generate_4_digits()
+    return await database.fetch_one(user_query, {
+        "email": user_in.email,
+        "password_hash": password_hash
+    })
 
-        await database.execute(user_query, {
-            "email": user_in.email,
-            "password_hash": password_hash
-        })
+async def create_verification_code(user_id: int) -> VerificationCodeResponse:
+    """
+    Create a verification code for a user.
+    """
+    code_query = """
+    INSERT INTO verification_codes (user_id, code) 
+    VALUES (:user_id, :code)
+    RETURNING id, code, created_at;
+    """
+    code = generate_4_digits()
 
-        user = await get_user_by_email(user_in.email)
-        await database.execute(code_query, {
-            "user_id": user.id,
-            "code": code
-        })
-
-        await send_email(user.email, code)
+    return await database.fetch_one(code_query, {
+        "user_id": user_id,
+        "code": code
+    })
 
 
 async def activate_user(user_id: int, code: str):
