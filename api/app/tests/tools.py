@@ -13,7 +13,7 @@ MAILDEV_API_URL = f"http://mail:{settings.SMTP_WEB_PORT}/email"
 
 async def get_all_emails():
     async with httpx.AsyncClient(
-            auth=(settings.SMTP_USER, settings.SMTP_PASSWORD)
+            auth=(settings.SMTP_USER, settings.SMTP_PASS)
     ) as client:
         response = await client.get(MAILDEV_API_URL)
         response.raise_for_status()

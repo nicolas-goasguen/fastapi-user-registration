@@ -1,12 +1,11 @@
 import random
+import re
 from email.message import EmailMessage
 
 import aiosmtplib
 import bcrypt
 
 from app.core.config import settings
-
-import re
 
 
 def is_valid_password(password: str):
@@ -56,5 +55,5 @@ async def send_email(user_email, code: str):
         hostname="mail",
         port=settings.SMTP_PORT,
         username=settings.SMTP_USER,
-        password=settings.SMTP_PASSWORD
+        password=settings.SMTP_PASS
     )

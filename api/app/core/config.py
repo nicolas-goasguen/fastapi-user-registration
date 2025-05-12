@@ -11,14 +11,14 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int
     POSTGRES_DB: str
     POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
+    POSTGRES_PASS: str
     DATABASE_URL: str
 
     # SMTP
     SMTP_PORT: int
     SMTP_WEB_PORT: int
     SMTP_USER: str
-    SMTP_PASSWORD: str
+    SMTP_PASS: str
 
 
 settings = Settings()
