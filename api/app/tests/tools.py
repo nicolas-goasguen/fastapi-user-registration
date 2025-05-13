@@ -41,10 +41,10 @@ def get_code_from_email(email):
 async def get_last_verification_data(credentials):
     query = """
         SELECT *
-        FROM verification_codes
+        FROM user_verification
         WHERE user_id = (
             SELECT id
-            FROM users
+            FROM user_data
             WHERE email = :email
         )
         ORDER BY created_at DESC
@@ -63,7 +63,7 @@ def get_random_email():
 
 async def expire_verification_code(verification_data):
     query = """
-        UPDATE verification_codes
+        UPDATE user_verification
         SET created_at = NOW() - INTERVAL '2 minutes'
         WHERE id = :id;
     """

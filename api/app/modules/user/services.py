@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 import app.modules.user.crud as user_crud
-import app.modules.verification.crud as verification_crud
+import app.modules.user_verification.crud as verification_crud
 from app.core.utils import (
     send_verification_email,
     hash_password,
@@ -15,10 +15,10 @@ from app.modules.user.schemas import (
     UserRegister,
     UserResponse,
 )
-from app.modules.verification.exceptions import (
-    VerificationCodeInvalidOrExpiredError,
+from app.modules.user_verification.exceptions import (
+    UserVerificationInvalidOrExpiredError,
 )
-from app.modules.verification.schemas import VerificationCodeActivate
+from app.modules.user_verification.schemas import UserVerificationActivate
 
 
 async def register_user(db, user_in: UserRegister) -> UserResponse:
@@ -41,7 +41,7 @@ async def register_user(db, user_in: UserRegister) -> UserResponse:
 
 
 async def activate_user(
-    db, credentials, verification_code_in: VerificationCodeActivate
+    db, credentials, verification_code_in: UserVerificationActivate
 ) -> UserResponse:
     """
     Activate authenticated user using a verification code if valid.
@@ -56,9 +56,9 @@ async def activate_user(
             db, existing_user.id, verification_code_in.code
         )
         if not valid_verification_code:
-            raise VerificationCodeInvalidOrExpiredError
+            raise UserVerificationInvalidOrExpiredError
         if valid_verification_code.created_at < datetime.now() - timedelta(minutes=1):
-            raise VerificationCodeInvalidOrExpiredError
+            raise UserVerificationInvalidOrExpiredError
 
         activated_user = await user_crud.update_is_active(
             db, existing_user.id, is_active=True

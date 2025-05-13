@@ -9,7 +9,7 @@ async def create(db, email: str, password_hash: str) -> UserFromDB | None:
     """
 
     query = """
-        INSERT INTO users (email, password_hash) 
+        INSERT INTO user_data (email, password_hash) 
         VALUES (:email, :password_hash)
         RETURNING id, email, is_active
         ;
@@ -36,7 +36,7 @@ async def get_by_email(db, email: str) -> UserFromDB | None:
 
     query = """
         SELECT id, email, is_active
-        FROM users 
+        FROM user_data 
         WHERE email = :email 
         LIMIT 1
         ;
@@ -63,7 +63,7 @@ async def update_is_active(
     """
 
     query = """
-        UPDATE users
+        UPDATE user_data
         SET is_active = :is_active
         WHERE id = :user_id
         RETURNING id, email, is_active

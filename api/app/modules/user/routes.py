@@ -7,7 +7,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from app.core.db import get_db
 from app.modules.user import services as user_service
 from app.modules.user.schemas import UserRegister
-from app.modules.verification.schemas import VerificationCodeActivate
+from app.modules.user_verification.schemas import UserVerificationActivate
 
 router = APIRouter(
     prefix="/users",
@@ -15,8 +15,6 @@ router = APIRouter(
 )
 
 security = HTTPBasic()
-
-# TODO: catch exceptions
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -42,7 +40,7 @@ async def register_user(
 
 @router.patch("/activate", status_code=status.HTTP_200_OK)
 async def activate_user(
-    verification_in: VerificationCodeActivate,
+    verification_in: UserVerificationActivate,
     db: Annotated[Database, Depends(get_db)],
     credentials: Annotated[HTTPBasicCredentials, Depends(security)],
 ):

@@ -1,15 +1,15 @@
 from app.core.utils import generate_4_digits
-from app.modules.verification.exceptions import VerificationCodeCrudInsertError
-from app.modules.verification.schemas import VerificationCodeFromDB
+from app.modules.user_verification.exceptions import UserVerificationCrudInsertError
+from app.modules.user_verification.schemas import UserVerificationFromDB
 
 
-async def create_code(db, user_id: int) -> VerificationCodeFromDB | None:
+async def create_code(db, user_id: int) -> UserVerificationFromDB | None:
     """
     Create a verification code for a user.
     """
 
     query = """
-        INSERT INTO verification_codes (user_id, code) 
+        INSERT INTO user_verification (user_id, code) 
         VALUES (:user_id, :code)
         RETURNING id, user_id, code, created_at
         ;
@@ -26,19 +26,19 @@ async def create_code(db, user_id: int) -> VerificationCodeFromDB | None:
     )
 
     if not row:
-        raise VerificationCodeCrudInsertError
+        raise UserVerificationCrudInsertError
 
-    return VerificationCodeFromDB(**row)
+    return UserVerificationFromDB(**row)
 
 
-async def get_valid_code(db, user_id: int, code: str) -> VerificationCodeFromDB | None:
+async def get_valid_code(db, user_id: int, code: str) -> UserVerificationFromDB | None:
     """
     Get user verification code from string code.
     """
 
     query = """
         SELECT id, user_id, code, created_at
-        FROM verification_codes
+        FROM user_verification
         WHERE 
             user_id = :user_id
             AND code = :code
@@ -57,4 +57,4 @@ async def get_valid_code(db, user_id: int, code: str) -> VerificationCodeFromDB 
     if not row:
         return None
 
-    return VerificationCodeFromDB(**row)
+    return UserVerificationFromDB(**row)
