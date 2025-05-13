@@ -1,4 +1,4 @@
-from app.exceptions.base import ServiceBaseError
+from app.modules.base.exceptions import ServiceBaseError
 
 
 class UserServiceBaseError(ServiceBaseError):

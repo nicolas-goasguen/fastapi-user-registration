@@ -1,12 +1,11 @@
-from app.exceptions.user_errors.db import (
+from app.modules.user.exceptions.db import (
     UserCrudInsertError,
     UserCrudUpdateIsActiveError,
 )
-from app.exceptions.user_errors.service import (
+from app.modules.user.exceptions.service import (
     UserAlreadyRegisteredError,
     UserAlreadyActivatedError,
 )
-
 
 __all__ = [
     # DB

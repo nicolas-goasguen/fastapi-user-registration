@@ -1,6 +1,6 @@
 from app.core.utils import generate_4_digits
-from app.exceptions import VerificationCodeCrudInsertError
-from app.schemas.verification import VerificationCodeFromDB
+from app.modules.verification.exceptions import VerificationCodeCrudInsertError
+from app.modules.verification.schemas import VerificationCodeFromDB
 
 
 async def create_code(db, user_id: int) -> VerificationCodeFromDB | None:

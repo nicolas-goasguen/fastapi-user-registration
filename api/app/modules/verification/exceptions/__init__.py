@@ -1,5 +1,5 @@
-from app.exceptions.verification_errors.db import VerificationCodeCrudInsertError
-from app.exceptions.verification_errors.service import (
+from app.modules.verification.exceptions.db import VerificationCodeCrudInsertError
+from app.modules.verification.exceptions.service import (
     VerificationCodeInvalidOrExpiredError,
 )
 

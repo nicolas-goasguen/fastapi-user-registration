@@ -1,5 +1,6 @@
-from app.exceptions import UserCrudInsertError, UserCrudUpdateIsActiveError
-from app.schemas.user import UserFromDB
+from app.modules.user.exceptions import UserCrudInsertError, UserCrudUpdateIsActiveError
+
+from app.modules.user.schemas import UserFromDB
 
 
 async def create(db, email: str, password_hash: str) -> UserFromDB | None:

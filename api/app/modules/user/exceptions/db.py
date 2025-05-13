@@ -1,4 +1,4 @@
-from app.exceptions.base import DBBaseError
+from app.modules.base.exceptions import DBBaseError
 
 
 class UserCrudError(DBBaseError):

@@ -1,22 +1,24 @@
 from datetime import datetime, timedelta
 
-import app.crud.user as user_crud
-import app.crud.verification as verification_crud
+import app.modules.user.crud as user_crud
+import app.modules.verification.crud as verification_crud
 from app.core.utils import (
     send_verification_email,
     hash_password,
     send_confirmation_email,
 )
-from app.exceptions import (
+from app.modules.user.exceptions import (
     UserAlreadyRegisteredError,
     UserAlreadyActivatedError,
-    VerificationCodeInvalidOrExpiredError,
 )
-from app.schemas.user import (
+from app.modules.user.schemas import (
     UserRegister,
     UserResponse,
 )
-from app.schemas.verification import VerificationCodeActivate
+from app.modules.verification.exceptions import (
+    VerificationCodeInvalidOrExpiredError,
+)
+from app.modules.verification.schemas import VerificationCodeActivate
 
 
 async def register_user(db, user_in: UserRegister) -> UserResponse:

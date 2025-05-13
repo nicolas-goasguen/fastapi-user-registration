@@ -5,9 +5,9 @@ from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from app.core.db import get_db
-from app.schemas.user import UserRegister
-from app.schemas.verification import VerificationCodeActivate
-from app.services import user as user_service
+from app.modules.user import services as user_service
+from app.modules.user.schemas import UserRegister
+from app.modules.verification.schemas import VerificationCodeActivate
 
 router = APIRouter(
     prefix="/users",
