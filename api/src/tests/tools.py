@@ -6,14 +6,14 @@ from datetime import datetime
 import httpx
 from src.db import database
 
-from src.config import settings
+from src.config import project_settings
 
-MAILDEV_API_URL = f"http://mail:{settings.SMTP_WEB_PORT}/email"
+MAILDEV_API_URL = f"http://mail:{project_settings.SMTP_WEB_PORT}/email"
 
 
 async def get_all_emails():
     async with httpx.AsyncClient(
-        auth=(settings.SMTP_USER, settings.SMTP_PASS)
+        auth=(project_settings.SMTP_USER, project_settings.SMTP_PASS)
     ) as client:
         response = await client.get(MAILDEV_API_URL)
         response.raise_for_status()

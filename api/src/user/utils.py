@@ -1,10 +1,5 @@
 import random
 import re
-from email.message import EmailMessage
-
-import aiosmtplib
-
-from src.config import settings
 
 
 def is_valid_password(password: str):
@@ -25,42 +20,3 @@ def is_valid_verification_code(code):
 
 def generate_4_digits():
     return "".join(random.choices("0123456789", k=4))
-
-
-async def send_email(from_, to_, subject, body):
-    from_ = from_
-    to_ = to_
-    subject = subject
-    body = body
-
-    message = EmailMessage()
-    message["From"] = from_
-    message["To"] = to_
-    message["Subject"] = subject
-    message.set_content(body)
-
-    await aiosmtplib.send(
-        message,
-        hostname="mail",
-        port=settings.SMTP_PORT,
-        username=settings.SMTP_USER,
-        password=settings.SMTP_PASS,
-    )
-
-
-async def send_verification_email(user_email, code: str):
-    from_ = "registration@example.com"
-    to_ = user_email
-    subject = f"Your verification code: {code}"
-    body = f"Please use this code to verify your registration: {code}. This code is valid for 1 minute."
-
-    await send_email(from_, to_, subject, body)
-
-
-async def send_confirmation_email(user_email):
-    from_ = "registration@example.com"
-    to_ = user_email
-    subject = f"Your account has been activated."
-    body = f"Your account has been successfully activated. Thank you for joining us!"
-
-    await send_email(from_, to_, subject, body)

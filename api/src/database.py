@@ -1,8 +1,8 @@
 from databases import Database
 
-from src.config import settings
+from src.config import db_settings
 
-database = Database(settings.DATABASE_URL)
+database = Database(db_settings.DATABASE_URL)
 
 
 async def get_db():

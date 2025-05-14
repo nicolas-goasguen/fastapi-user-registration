@@ -1,12 +1,12 @@
 from pydantic_settings import BaseSettings
 
 
-class Settings(BaseSettings):
-    # PROJECT
+class ProjectSettings(BaseSettings):
     PROJECT_NAME: str = "User Registration API"
     ENVIRONMENT: str
 
-    # DATABASE
+
+class DBSettings(BaseSettings):
     POSTGRES_SERVER: str
     POSTGRES_PORT: int
     POSTGRES_DB: str
@@ -14,11 +14,27 @@ class Settings(BaseSettings):
     POSTGRES_PASS: str
     DATABASE_URL: str
 
-    # SMTP
+
+class SMTPSettings(BaseSettings):
     SMTP_PORT: int
     SMTP_WEB_PORT: int
     SMTP_USER: str
     SMTP_PASS: str
 
 
-settings = Settings()
+class BrokerSettings(BaseSettings):
+    RABBITMQ_NODE_PORT: int
+    RABBITMQ_USER: str
+    RABBITMQ_PASS: str
+
+
+class WorkerSettings(BaseSettings):
+    CELERY_BROKER_URL: str
+    CELERY_RESULT_BACKEND: str
+
+
+project_settings = ProjectSettings()
+db_settings = DBSettings()
+smtp_settings = SMTPSettings()
+broker_settings = BrokerSettings()
+worker_settings = WorkerSettings()

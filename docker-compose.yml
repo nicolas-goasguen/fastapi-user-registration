@@ -4,27 +4,27 @@ services:
 
   db:
     build: ./db
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_cron
+      -c cron.database_name=${POSTGRES_DB}
     restart: always
     environment:
       - POSTGRES_PORT=${POSTGRES_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASS}
-    networks:
-      - custom-network
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - custom-network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       timeout: 10s
       retries: 5
       start_period: 30s
-    command: >
-      postgres
-      -c shared_preload_libraries=pg_cron
-      -c cron.database_name=${POSTGRES_DB}
 
   mail:
     image: maildev/maildev
@@ -32,25 +32,66 @@ services:
     environment:
       - MAILDEV_INCOMING_USER=${SMTP_USER}
       - MAILDEV_INCOMING_PASS=${SMTP_PASS}
-    networks:
-      - custom-network
     ports:
       - "${EXPOSED_SMTP_WEB_PORT:-}:1080"
+    networks:
+      - custom-network
+
+  rabbitmq:
+    image: rabbitmq:latest
+    restart: always
+    environment:
+      RABBITMQ_NODE_PORT: ${RABBITMQ_NODE_PORT}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    volumes:
+      - rabbitmq-lib:/var/lib/rabbitmq
+      - rabbitmq-log:/var/log/rabbitmq
+    networks:
+      - custom-network
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "check_running" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  celery_worker:
+    build: ./api
+    command: celery -A src.workers.celery worker --loglevel=info
+    working_dir: /
+    restart: always
+    env_file:
+      - .env.${ENVIRONMENT}
+    environment:
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mail:
+        condition: service_started
+    networks:
+      - custom-network
 
   api:
     build: ./api
     restart: always
     env_file:
       - .env.${ENVIRONMENT}
+    ports:
+      - "${EXPOSED_API_PORT:-}:80"
     depends_on:
       db:
         condition: service_healthy
       mail:
         condition: service_started
+      rabbitmq:
+        condition: service_started
+      celery_worker:
+        condition: service_started
     networks:
       - custom-network
-    ports:
-      - "${EXPOSED_API_PORT:-}:80"
 
 networks:
   custom-network:
@@ -58,3 +99,5 @@ networks:
 
 volumes:
   pgdata:
+  rabbitmq-lib:
+  rabbitmq-log:

@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from src.config import settings
+from src.config import project_settings
 from src.database import database
 from src.exceptions import register_all_exception_handlers
 from src.user.router import router as user_router
@@ -16,7 +16,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title=f"{settings.PROJECT_NAME} - {settings.ENVIRONMENT}",
+    title=f"{project_settings.PROJECT_NAME} - {project_settings.ENVIRONMENT}",
     description="""
 **Overview**
 

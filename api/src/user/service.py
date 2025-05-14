@@ -12,10 +12,7 @@ from src.user.schemas import (
     UserResponse,
     UserVerificationActivate,
 )
-from src.user.utils import (
-    send_verification_email,
-    send_confirmation_email,
-)
+from src.user.tasks.email import send_verification_email, send_confirmation_email
 
 
 async def register_user(db, user_in: UserRegister) -> UserResponse:
@@ -32,7 +29,7 @@ async def register_user(db, user_in: UserRegister) -> UserResponse:
         user = await user_crud.create(db, str(user_in.email), password_hash)
         verification = await user_crud.create_verification(db, user.id)
 
-    await send_verification_email(user.email, verification.code)
+    send_verification_email.delay(user.email, verification.code)
 
     return UserResponse(**user.model_dump())
 
@@ -57,6 +54,6 @@ async def activate_user(
 
         activated_user = await user_crud.update_is_active(db, user.id, is_active=True)
 
-        await send_confirmation_email(activated_user.email)
+    send_confirmation_email.delay(activated_user.email)
 
-        return UserResponse(**activated_user.model_dump())
+    return UserResponse(**activated_user.model_dump())
