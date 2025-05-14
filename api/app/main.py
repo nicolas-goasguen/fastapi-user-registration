@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from app.core.config import settings
 from app.core.db import database
+from app.core.exceptions.handlers_loader import register_all_exception_handlers
 from app.modules.user.routes import router as user_router
 
 
@@ -31,3 +32,5 @@ User registration API in Python with FastAPI.
 )
 
 app.include_router(user_router)
+
+register_all_exception_handlers(app)  # automatically load handlers from modules

@@ -1,7 +1,7 @@
-from app.modules.user_verification.exceptions.crud import (
+from app.modules.user_verification.exceptions.crud_errors import (
     UserVerificationCrudInsertError,
 )
-from app.modules.user_verification.exceptions.services import (
+from app.modules.user_verification.exceptions.services_errors import (
     UserVerificationInvalidOrExpiredError,
 )
 
