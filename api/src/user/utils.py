@@ -5,7 +5,7 @@ from email.message import EmailMessage
 import aiosmtplib
 import bcrypt
 
-from app.core.config import settings
+from src.config import settings
 
 
 def is_valid_password(password: str):

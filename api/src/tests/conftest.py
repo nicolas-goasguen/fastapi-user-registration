@@ -2,13 +2,13 @@ import httpx
 import pytest
 from asgi_lifespan import LifespanManager
 
-from app.main import app as fastapi_app
-from app.tests.assertions import (
+from src.main import app as fastapi_app
+from src.tests.assertions import (
     assert_register_ok,
     assert_only_one_correct_mail_sent,
     assert_activate_ok,
 )
-from app.tests.tools import (
+from src.tests.tools import (
     get_all_emails,
     get_last_verification_data,
     get_random_email,

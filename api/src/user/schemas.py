@@ -1,6 +1,8 @@
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr, field_validator
 
-from app.core.utils import is_valid_password
+from src.user.utils import is_valid_password, is_valid_verification_code
 
 
 class UserFromDB(BaseModel):
@@ -13,8 +15,8 @@ class UserRegister(BaseModel):
     email: EmailStr
     password: str
 
-    @classmethod
     @field_validator("password")
+    @classmethod
     def validate_password(cls, password: str) -> str:
         if not is_valid_password(password):
             raise ValueError(
@@ -27,3 +29,21 @@ class UserResponse(BaseModel):
     id: int
     email: str
     is_active: bool
+
+
+class UserVerificationFromDB(BaseModel):
+    id: int
+    user_id: int
+    code: str
+    created_at: datetime
+
+
+class UserVerificationActivate(BaseModel):
+    code: str
+
+    @field_validator("code")
+    @classmethod
+    def validate_code(cls, code: str) -> str:
+        if not is_valid_verification_code(code):
+            raise ValueError("The verification code must be exactly 4 digits.")
+        return code

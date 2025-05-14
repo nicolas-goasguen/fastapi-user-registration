@@ -1,6 +1,13 @@
-from app.modules.user.exceptions import UserCrudInsertError, UserCrudUpdateIsActiveError
+from src.user.exceptions import (
+    UserCrudInsertError,
+    UserCrudUpdateIsActiveError,
+    UserVerificationCrudInsertError,
+)
+from src.user.schemas import UserFromDB, UserVerificationFromDB
+from src.user.utils import generate_4_digits
 
-from app.modules.user.schemas import UserFromDB
+
+# User
 
 
 async def create(db, email: str, password_hash: str) -> UserFromDB | None:
@@ -82,3 +89,63 @@ async def update_is_active(
         raise UserCrudUpdateIsActiveError
 
     return UserFromDB(**row)
+
+
+# User verification
+
+
+async def create_verification(db, user_id: int) -> UserVerificationFromDB | None:
+    """
+    Create a verification code for a user.
+    """
+
+    query = """
+        INSERT INTO user_verification (user_id, code) 
+        VALUES (:user_id, :code)
+        RETURNING id, user_id, code, created_at
+        ;
+    """
+
+    code = generate_4_digits()
+
+    row = await db.fetch_one(
+        query,
+        {
+            "user_id": user_id,
+            "code": code,
+        },
+    )
+
+    if not row:
+        raise UserVerificationCrudInsertError
+
+    return UserVerificationFromDB(**row)
+
+
+async def get_valid_code(db, user_id: int, code: str) -> UserVerificationFromDB | None:
+    """
+    Get user verification code from string code.
+    """
+
+    query = """
+        SELECT id, user_id, code, created_at
+        FROM user_verification
+        WHERE 
+            user_id = :user_id
+            AND code = :code
+            AND created_at > NOW() - INTERVAL '1 minute'
+        ;
+    """
+
+    row = await db.fetch_one(
+        query,
+        {
+            "user_id": user_id,
+            "code": code,
+        },
+    )
+
+    if not row:
+        return None
+
+    return UserVerificationFromDB(**row)

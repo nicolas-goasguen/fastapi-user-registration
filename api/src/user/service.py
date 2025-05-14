@@ -1,24 +1,21 @@
 from datetime import datetime, timedelta
 
-import app.modules.user.crud as user_crud
-import app.modules.user_verification.crud as verification_crud
-from app.core.utils import (
+import src.user.crud as user_crud
+from src.user.exceptions import (
+    UserAlreadyRegisteredError,
+    UserAlreadyActivatedError,
+    UserVerificationCodeInvalidError,
+)
+from src.user.schemas import (
+    UserRegister,
+    UserResponse,
+    UserVerificationActivate,
+)
+from src.user.utils import (
     send_verification_email,
     hash_password,
     send_confirmation_email,
 )
-from app.modules.user.exceptions import (
-    UserAlreadyRegisteredError,
-    UserAlreadyActivatedError,
-)
-from app.modules.user.schemas import (
-    UserRegister,
-    UserResponse,
-)
-from app.modules.user_verification.exceptions import (
-    UserVerificationInvalidOrExpiredError,
-)
-from app.modules.user_verification.schemas import UserVerificationActivate
 
 
 async def register_user(db, user_in: UserRegister) -> UserResponse:
@@ -32,12 +29,12 @@ async def register_user(db, user_in: UserRegister) -> UserResponse:
             raise UserAlreadyRegisteredError
 
         password_hash = hash_password(user_in.password)
-        created_user = await user_crud.create(db, str(user_in.email), password_hash)
-        created_code = await verification_crud.create_code(db, created_user.id)
+        user = await user_crud.create(db, str(user_in.email), password_hash)
+        verification = await user_crud.create_verification(db, user.id)
 
-    await send_verification_email(created_user.email, created_code.code)
+    await send_verification_email(user.email, verification.code)
 
-    return UserResponse(**created_user.model_dump())
+    return UserResponse(**user.model_dump())
 
 
 async def activate_user(
@@ -52,13 +49,13 @@ async def activate_user(
         if existing_user and existing_user.is_active is True:
             raise UserAlreadyActivatedError
 
-        valid_verification_code = await verification_crud.get_valid_code(
+        valid_verification = await user_crud.get_valid_code(
             db, existing_user.id, verification_code_in.code
         )
-        if not valid_verification_code:
-            raise UserVerificationInvalidOrExpiredError
-        if valid_verification_code.created_at < datetime.now() - timedelta(minutes=1):
-            raise UserVerificationInvalidOrExpiredError
+        if not valid_verification:
+            raise UserVerificationCodeInvalidError
+        if valid_verification.created_at < datetime.now() - timedelta(minutes=1):
+            raise UserVerificationCodeInvalidError
 
         activated_user = await user_crud.update_is_active(
             db, existing_user.id, is_active=True

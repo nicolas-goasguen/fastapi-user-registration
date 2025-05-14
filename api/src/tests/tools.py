@@ -4,9 +4,9 @@ import string
 from datetime import datetime
 
 import httpx
+from src.db import database
 
-from app.core.config import settings
-from app.core.db import database
+from src.config import settings
 
 MAILDEV_API_URL = f"http://mail:{settings.SMTP_WEB_PORT}/email"
 

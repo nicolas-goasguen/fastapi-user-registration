@@ -4,10 +4,10 @@ from databases import Database
 from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-from app.core.db import get_db
-from app.modules.user import services as user_service
-from app.modules.user.schemas import UserRegister
-from app.modules.user_verification.schemas import UserVerificationActivate
+from src.database import get_db
+from src.user import service as user_service
+from src.user.schemas import UserRegister
+from src.user.schemas import UserVerificationActivate
 
 router = APIRouter(
     prefix="/users",

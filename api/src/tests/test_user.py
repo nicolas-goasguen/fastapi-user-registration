@@ -1,7 +1,6 @@
 import pytest
 
-from app.core.utils import generate_4_digits
-from app.tests.assertions import (
+from src.tests.assertions import (
     assert_register_ko_already_registered,
     assert_register_ko_invalid_email_format,
     assert_register_ko_invalid_password_format,
@@ -12,7 +11,8 @@ from app.tests.assertions import (
     assert_activate_ko_invalid_verification_code_format,
     assert_only_one_correct_mail_sent,
 )
-from app.tests.tools import expire_verification_code
+from src.tests.tools import expire_verification_code
+from src.user.utils import generate_4_digits
 
 
 @pytest.mark.asyncio

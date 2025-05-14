@@ -1,6 +1,6 @@
 from fastapi import status
 
-from app.tests.tools import get_code_from_email, get_user_new_emails
+from src.tests.tools import get_code_from_email, get_user_new_emails
 
 
 def assert_register_ok(response):

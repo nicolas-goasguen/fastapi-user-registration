@@ -2,14 +2,14 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.core.config import settings
-from app.core.db import database
-from app.core.exceptions.handlers_loader import register_all_exception_handlers
-from app.modules.user.routes import router as user_router
+from src.config import settings
+from src.database import database
+from src.exceptions import register_all_exception_handlers
+from src.user.router import router as user_router
 
 
 @asynccontextmanager
-async def lifespan(fastapi_app: FastAPI):
+async def lifespan(app: FastAPI):
     await database.connect()
     yield
     await database.disconnect()
