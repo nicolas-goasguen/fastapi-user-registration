@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import src.user.crud as user_crud
+from src.user.authentication import hash_password
 from src.user.exceptions import (
     UserAlreadyRegisteredError,
     UserAlreadyActivatedError,
@@ -13,7 +14,6 @@ from src.user.schemas import (
 )
 from src.user.utils import (
     send_verification_email,
-    hash_password,
     send_confirmation_email,
 )
 
@@ -38,28 +38,24 @@ async def register_user(db, user_in: UserRegister) -> UserResponse:
 
 
 async def activate_user(
-    db, credentials, verification_code_in: UserVerificationActivate
+    db, user, verification_code_in: UserVerificationActivate
 ) -> UserResponse:
     """
     Activate authenticated user using a verification code if valid.
     """
+    if user.is_active is True:
+        raise UserAlreadyActivatedError
 
     async with db.transaction():
-        existing_user = await user_crud.get_by_email(db, credentials.username)
-        if existing_user and existing_user.is_active is True:
-            raise UserAlreadyActivatedError
-
         valid_verification = await user_crud.get_valid_code(
-            db, existing_user.id, verification_code_in.code
+            db, user.id, verification_code_in.code
         )
         if not valid_verification:
             raise UserVerificationCodeInvalidError
         if valid_verification.created_at < datetime.now() - timedelta(minutes=1):
             raise UserVerificationCodeInvalidError
 
-        activated_user = await user_crud.update_is_active(
-            db, existing_user.id, is_active=True
-        )
+        activated_user = await user_crud.update_is_active(db, user.id, is_active=True)
 
         await send_confirmation_email(activated_user.email)
 

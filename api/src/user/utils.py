@@ -3,7 +3,6 @@ import re
 from email.message import EmailMessage
 
 import aiosmtplib
-import bcrypt
 
 from src.config import settings
 
@@ -22,16 +21,6 @@ def is_valid_password(password: str):
 def is_valid_verification_code(code):
     pattern = re.compile("^[0-9]{4}$")
     return re.search(pattern, code)
-
-
-def hash_password(password: str):
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password.encode(), salt)
-    return hashed.decode()
-
-
-def verify_password(password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(password.encode(), hashed_password.encode())
 
 
 def generate_4_digits():

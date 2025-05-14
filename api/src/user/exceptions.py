@@ -45,10 +45,32 @@ class UserServiceBaseError(ServiceBaseError):
         super().__init__(message)
 
 
+class UserInvalidCredentialsError(UserServiceBaseError):
+    """Raised when an operation is not authorized to the user."""
+
+    status_code = 403
+
+    def __init__(
+        self,
+        message: str = "You are not authorized to perform this action (invalid credentials).",
+    ):
+        super().__init__(message)
+
+
+class UserNotActivatedError(UserServiceBaseError):
+    """Raised when an operation is not authorized to the user."""
+
+    status_code = 403
+
+    def __init__(
+        self,
+        message: str = "You are not authorized to perform this action (user not activated).",
+    ):
+        super().__init__(message)
+
+
 class UserAlreadyRegisteredError(UserServiceBaseError):
-    """
-    Raised when an email has already been used for registration.
-    """
+    """Raised when an email has already been used for registration."""
 
     status_code = 409
 
@@ -57,9 +79,7 @@ class UserAlreadyRegisteredError(UserServiceBaseError):
 
 
 class UserAlreadyActivatedError(UserServiceBaseError):
-    """
-    Raised when a user has already been activated.
-    """
+    """Raised when a user has already been activated."""
 
     status_code = 409
 

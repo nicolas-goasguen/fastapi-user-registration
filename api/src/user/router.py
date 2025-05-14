@@ -2,11 +2,12 @@ from typing import Annotated
 
 from databases import Database
 from fastapi import APIRouter, Depends, status
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.security import HTTPBasic
 
 from src.database import get_db
 from src.user import service as user_service
-from src.user.schemas import UserRegister
+from src.user.authentication import get_current_user
+from src.user.schemas import UserRegister, UserResponse
 from src.user.schemas import UserVerificationActivate
 
 router = APIRouter(
@@ -42,7 +43,7 @@ async def register_user(
 async def activate_user(
     verification_in: UserVerificationActivate,
     db: Annotated[Database, Depends(get_db)],
-    credentials: Annotated[HTTPBasicCredentials, Depends(security)],
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
 ):
     """
     Activate authenticated user using a verification code.
@@ -58,7 +59,7 @@ async def activate_user(
     - **401 Unauthorized**: Invalid credentials.
     - **403 Forbidden**: User already activated.
     """
-    await user_service.activate_user(db, credentials, verification_in)
+    await user_service.activate_user(db, current_user, verification_in)
     return {
         "message": "User activated successfully. Please check your email for confirmation."
     }
