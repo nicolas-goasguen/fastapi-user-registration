@@ -122,7 +122,9 @@ async def create_verification(db, user_id: int) -> UserVerificationFromDB | None
     return UserVerificationFromDB(**row)
 
 
-async def get_valid_code(db, user_id: int, code: str) -> UserVerificationFromDB | None:
+async def get_valid_verification(
+    db, user_id: int, code: str
+) -> UserVerificationFromDB | None:
     """
     Get user verification code from string code.
     """

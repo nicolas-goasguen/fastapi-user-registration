@@ -12,7 +12,10 @@ from src.user.schemas import (
     UserResponse,
     UserVerificationActivate,
 )
-from src.user.tasks.email import send_verification_email, send_confirmation_email
+from src.user.tasks.email import (
+    send_verification_email,
+    send_confirmation_email,
+)
 
 
 async def register_user(db, user_in: UserRegister) -> UserResponse:
@@ -44,7 +47,7 @@ async def activate_user(
         raise UserAlreadyActivatedError
 
     async with db.transaction():
-        valid_verification = await user_crud.get_valid_code(
+        valid_verification = await user_crud.get_valid_verification(
             db, user.id, verification_code_in.code
         )
         if not valid_verification:
