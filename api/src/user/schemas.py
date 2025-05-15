@@ -8,6 +8,7 @@ from src.user.utils import is_valid_password, is_valid_verification_code
 class UserFromDB(BaseModel):
     id: int
     email: str
+    password_hash: str
     is_active: bool
 
 
