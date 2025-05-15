@@ -1,18 +1,20 @@
 from fastapi import status
 
-from src.tests.tools import get_code_from_email, get_user_new_emails
+from src.user.tests.tools import get_code_from_email, get_user_new_emails
 
 
 def assert_register_ok(response):
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == {
-        "message": "User registered. Check your email to activate it."
+        "detail": "User registered. Please check your email to activate it."
     }
 
 
 def assert_register_ko_already_registered(response):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {"detail": "Email is already in use."}
+    assert response.json() == {
+        "detail": "This email has already been used for registration."
+    }
 
 
 def assert_register_ko_invalid_email_format(response):
@@ -42,22 +44,30 @@ def assert_register_ko_invalid_password_format(response):
 
 def assert_activate_ok(response):
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"message": "User activated successfully."}
+    assert response.json() == {
+        "detail": "User activated successfully. Please check your email for confirmation."
+    }
 
 
 def assert_activate_ko_invalid_credentials(response):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    assert response.json() == {"detail": "Invalid credentials."}
+    assert response.json() == {
+        "detail": "You are not authorized to perform this action (invalid credentials)."
+    }
 
 
 def assert_activate_ko_invalid_verification_code(response):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {"detail": "Invalid or expired verification code."}
+    assert response.json() == {
+        "detail": "This verification code is invalid or has expired."
+    }
 
 
 def assert_activate_ko_expired_verification_code(response):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {"detail": "Invalid or expired verification code."}
+    assert response.json() == {
+        "detail": "This verification code is invalid or has expired."
+    }
 
 
 def assert_activate_ko_invalid_verification_code_format(response):
@@ -67,12 +77,12 @@ def assert_activate_ko_invalid_verification_code_format(response):
     assert len(response_json["detail"]) == 1
     response_detail = response_json["detail"][0]
     assert response_detail["type"] == "value_error"
-    assert response_detail["loc"] == ["body", "verification_code"]
+    assert response_detail["loc"] == ["body", "code"]
 
 
 def assert_activate_ko_already_activated(response):
     assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "User already activated."}
+    assert response.json() == {"detail": "This account has already been activated."}
 
 
 async def assert_only_one_correct_mail_sent(credentials, verification_data, emails):

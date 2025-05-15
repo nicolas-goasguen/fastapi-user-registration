@@ -36,7 +36,7 @@ async def register_user(
     - **503 Service Unavailable**: Failed to send verification email.
     """
     await user_service.register_user(db, user_in)
-    return {"message": "User registered. Please check your email to activate it."}
+    return {"detail": "User registered. Please check your email to activate it."}
 
 
 @router.patch("/activate", status_code=status.HTTP_200_OK)
@@ -61,5 +61,5 @@ async def activate_user(
     """
     await user_service.activate_user(db, current_user, verification_in)
     return {
-        "message": "User activated successfully. Please check your email for confirmation."
+        "detail": "User activated successfully. Please check your email for confirmation."
     }

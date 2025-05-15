@@ -1,33 +1,16 @@
 import httpx
 import pytest
-from asgi_lifespan import LifespanManager
 
-from src.main import app as fastapi_app
-from src.tests.assertions import (
+from src.user.tests.assertions import (
     assert_register_ok,
     assert_only_one_correct_mail_sent,
     assert_activate_ok,
 )
-from src.tests.tools import (
+from src.user.tests.tools import (
     get_all_emails,
     get_last_verification_data,
     get_random_email,
 )
-
-
-@pytest.fixture
-async def app():
-    async with LifespanManager(fastapi_app) as manager:
-        yield manager.app
-
-
-@pytest.fixture
-async def client(app):
-    async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app),
-        base_url="http://api",
-    ) as client:
-        yield client
 
 
 @pytest.fixture

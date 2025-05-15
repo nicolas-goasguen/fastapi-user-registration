@@ -1,6 +1,6 @@
 import pytest
 
-from src.tests.assertions import (
+from src.user.tests.assertions import (
     assert_register_ko_already_registered,
     assert_register_ko_invalid_email_format,
     assert_register_ko_invalid_password_format,
@@ -11,7 +11,7 @@ from src.tests.assertions import (
     assert_activate_ko_invalid_verification_code_format,
     assert_only_one_correct_mail_sent,
 )
-from src.tests.tools import expire_verification_code
+from src.user.tests.tools import expire_verification_code
 from src.user.utils import generate_4_digits
 
 
@@ -120,7 +120,7 @@ async def test_activate_invalid_credentials(
 ):
     response = await client.patch(
         "/users/activate",
-        json={"verification_code": verification_data["code"]},
+        json={"code": verification_data["code"]},
         auth=("invalid", "credentials"),
     )
     assert_activate_ko_invalid_credentials(response)
@@ -135,7 +135,7 @@ async def test_activate_already_activated(
 ):
     response = await client.patch(
         "/users/activate",
-        json={"verification_code": verification_data["code"]},
+        json={"code": verification_data["code"]},
         auth=random_auth,
     )
     assert_activate_ko_already_activated(response)
@@ -154,7 +154,7 @@ async def test_activate_invalid_verification_code(
 
     response = await client.patch(
         "/users/activate",
-        json={"verification_code": invalid_code},
+        json={"code": invalid_code},
         auth=random_auth,
     )
     assert_activate_ko_invalid_verification_code(response)
@@ -172,7 +172,7 @@ async def test_activate_expired_verification_code(
 
     response = await client.patch(
         "/users/activate",
-        json={"verification_code": verification_data["code"]},
+        json={"code": verification_data["code"]},
         auth=random_auth,
     )
     assert_activate_ko_expired_verification_code(response)
@@ -186,7 +186,7 @@ async def test_activate_invalid_verification_code_format_not_digit(
 ):
     response = await client.patch(
         "/users/activate",
-        json={"verification_code": "123A"},  # Non-numeric code
+        json={"code": "123A"},  # Non-numeric code
         auth=random_auth,
     )
     assert_activate_ko_invalid_verification_code_format(response)
@@ -201,7 +201,7 @@ async def test_activate_invalid_verification_code_format_too_short(
     """Test activation with a verification code that is too short."""
     response = await client.patch(
         "/users/activate",
-        json={"verification_code": "123"},
+        json={"code": "123"},
         auth=random_auth,
     )
     assert_activate_ko_invalid_verification_code_format(response)
@@ -215,7 +215,7 @@ async def test_activate_invalid_verification_code_format_too_long(
 ):
     response = await client.patch(
         "/users/activate",
-        json={"verification_code": "12345"},
+        json={"code": "12345"},
         auth=random_auth,
     )
     assert_activate_ko_invalid_verification_code_format(response)
