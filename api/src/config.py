@@ -16,10 +16,12 @@ class DBSettings(BaseSettings):
 
 
 class SMTPSettings(BaseSettings):
+    SMTP_SERVER: str
     SMTP_PORT: int
     SMTP_WEB_PORT: int
     SMTP_USER: str
     SMTP_PASS: str
+    SMTP_SENDER: str
 
 
 class BrokerSettings(BaseSettings):

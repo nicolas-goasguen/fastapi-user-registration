@@ -8,7 +8,9 @@ import httpx
 from src.config import smtp_settings
 from src.database import database
 
-MAILDEV_API_URL = f"http://mail:{smtp_settings.SMTP_WEB_PORT}/email"
+MAILDEV_API_URL = (
+    f"http://{smtp_settings.SMTP_SERVER}:{smtp_settings.SMTP_WEB_PORT}/email"
+)
 
 
 async def get_all_emails():

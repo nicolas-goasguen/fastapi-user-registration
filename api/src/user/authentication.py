@@ -5,7 +5,7 @@ from databases import Database
 from fastapi import Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-from src.database import get_db
+from src.dependencies import get_db
 from src.user import crud as user_crud
 from src.user.exceptions import (
     UserInvalidCredentialsError,

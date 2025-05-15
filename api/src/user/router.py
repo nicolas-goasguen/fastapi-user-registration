@@ -4,7 +4,7 @@ from databases import Database
 from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPBasic
 
-from src.database import get_db
+from src.dependencies import get_db
 from src.user import service as user_service
 from src.user.authentication import get_current_user
 from src.user.schemas import UserRegister, UserResponse
@@ -42,8 +42,8 @@ async def register_user(
 @router.patch("/activate", status_code=status.HTTP_200_OK)
 async def activate_user(
     verification_in: UserVerificationActivate,
-    db: Annotated[Database, Depends(get_db)],
     current_user: Annotated[UserResponse, Depends(get_current_user)],
+    db: Annotated[Database, Depends(get_db)],
 ):
     """
     Activate authenticated user using a verification code.
