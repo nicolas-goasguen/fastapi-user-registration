@@ -11,7 +11,7 @@ from src.user.exceptions import (
     UserInvalidCredentialsError,
     UserNotActivatedError,
 )
-from src.user.schemas import UserResponse
+from src.user.schemas import UserPublic
 
 security = HTTPBasic()
 
@@ -29,8 +29,8 @@ def verify_password(password: str, hashed_password: str) -> bool:
 async def get_current_user(
     db: Annotated[Database, Depends(get_db)],
     credentials: HTTPBasicCredentials = Depends(security),
-) -> UserResponse:
-    user = await user_crud.get_by_email(db, credentials.username)
+) -> UserPublic:
+    user = await user_crud.get_user_by_email(db, credentials.username)
     if not user:
         raise UserInvalidCredentialsError
 
@@ -38,7 +38,7 @@ async def get_current_user(
     if not password_ok:
         raise UserInvalidCredentialsError
 
-    return UserResponse(**user.model_dump())
+    return UserPublic(**user.model_dump())
 
 
 async def get_current_active_user(

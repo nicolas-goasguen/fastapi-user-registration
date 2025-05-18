@@ -26,7 +26,7 @@ class UserRegister(BaseModel):
         return password
 
 
-class UserResponse(BaseModel):
+class UserPublic(BaseModel):
     id: int
     email: str
     is_active: bool

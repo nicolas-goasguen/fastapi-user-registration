@@ -7,7 +7,7 @@ from fastapi.security import HTTPBasic
 from src.dependencies import get_db
 from src.user import service as user_service
 from src.user.authentication import get_current_user
-from src.user.schemas import UserRegister, UserResponse
+from src.user.schemas import UserRegister, UserPublic
 from src.user.schemas import UserVerificationActivate
 
 router = APIRouter(
@@ -42,7 +42,7 @@ async def register_user(
 @router.patch("/activate", status_code=status.HTTP_200_OK)
 async def activate_user(
     verification_in: UserVerificationActivate,
-    current_user: Annotated[UserResponse, Depends(get_current_user)],
+    current_user: Annotated[UserPublic, Depends(get_current_user)],
     db: Annotated[Database, Depends(get_db)],
 ):
     """
