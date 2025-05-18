@@ -1,0 +1,18 @@
+services:
+  api:
+    volumes:
+      - ./api/src:/src
+    command: fastapi dev main.py --port 80
+    ports:
+      - "${EXPOSED_API_PORT:-}:80"
+    depends_on:
+      db:
+        condition: service_healthy
+      mail:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      celery_worker:
+        condition: service_started
+    networks:
+      - custom-network
