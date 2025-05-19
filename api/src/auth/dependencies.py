@@ -1,12 +1,12 @@
 from typing import Annotated
 
-import bcrypt
 from databases import Database
 from fastapi import Depends
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.security import HTTPBasicCredentials, HTTPBasic
 
+from src.auth.utils import verify_password
 from src.dependencies import get_db
-from src.user import crud as user_crud
+from src.user.crud import get_user_by_email
 from src.user.exceptions import (
     UserInvalidCredentialsError,
     UserNotActivatedError,
@@ -16,21 +16,11 @@ from src.user.schemas import UserPublic
 security = HTTPBasic()
 
 
-def hash_password(password: str):
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password.encode(), salt)
-    return hashed.decode()
-
-
-def verify_password(password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(password.encode(), hashed_password.encode())
-
-
 async def get_current_user(
     db: Annotated[Database, Depends(get_db)],
     credentials: HTTPBasicCredentials = Depends(security),
 ) -> UserPublic:
-    user = await user_crud.get_user_by_email(db, credentials.username)
+    user = await get_user_by_email(db, credentials.username)
     if not user:
         raise UserInvalidCredentialsError
 

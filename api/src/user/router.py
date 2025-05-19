@@ -4,9 +4,9 @@ from databases import Database
 from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPBasic
 
+from src.auth.dependencies import get_current_user
 from src.dependencies import get_db
 from src.user import service as user_service
-from src.user.authentication import get_current_user
 from src.user.schemas import UserRegister, UserPublic
 from src.user.schemas import UserVerificationActivate
 

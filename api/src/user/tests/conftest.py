@@ -4,8 +4,8 @@ import httpx
 import pytest
 from asgi_lifespan import LifespanManager
 
+from src.auth.utils import hash_password
 from src.main import app as fastapi_app
-from src.user.authentication import hash_password
 from src.user.schemas import UserFromDB, UserVerificationFromDB
 from src.user.tests.utils import (
     get_all_emails,

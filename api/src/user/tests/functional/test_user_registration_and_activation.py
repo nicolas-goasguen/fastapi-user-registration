@@ -3,7 +3,8 @@ from unittest.mock import patch
 import databases.core
 import pytest
 
-from src.user.authentication import verify_password, get_current_user
+from src.auth.dependencies import get_current_user
+from src.auth.utils import verify_password
 from src.user.tests.assertions import assert_register_ok, assert_activate_ok
 from src.user.tests.mocks.crud import (
     side_effect_crud_create_user,

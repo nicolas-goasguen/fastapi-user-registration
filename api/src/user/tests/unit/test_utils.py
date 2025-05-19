@@ -1,4 +1,4 @@
-from src.user.authentication import verify_password, hash_password
+from src.auth.utils import verify_password, hash_password
 from src.user.utils import is_valid_verification_code, generate_random_4_digits
 
 

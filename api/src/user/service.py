@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
 from databases import Database
+from src.auth.utils import hash_password
 
 import src.user.crud as user_crud
-from src.user.authentication import hash_password
 from src.user.exceptions import (
     UserAlreadyRegisteredError,
     UserAlreadyActivatedError,
