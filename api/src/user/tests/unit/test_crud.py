@@ -26,18 +26,18 @@ from src.user.tests.unit.assertions import (
 
 DEFAULT_ID = 1
 DEFAULT_EMAIL = "test@example.com"
-DEFAULT_PWD = "123Password?!"
-DEFAULT_PWD_HASH = "$2b$12$q1jZc9H7jm36Eu9TRn0uB.3Bmch9JasnMfhUD8IqdQsUR01afrWDm"
+DEFAULT_PASSWORD = "123Password?!"
+DEFAULT_PASSWORD_HASH = "$2b$12$q1jZc9H7jm36Eu9TRn0uB.3Bmch9JasnMfhUD8IqdQsUR01afrWDm"
 DEFAULT_CODE = "1234"
 
 DEFAULT_INACTIVE_USER = return_value_db_user(
     email=DEFAULT_EMAIL,
-    password_hash=DEFAULT_PWD_HASH,
+    password_hash=DEFAULT_PASSWORD_HASH,
     is_active=False,
 )
 DEFAULT_ACTIVE_USER = return_value_db_user(
     email=DEFAULT_EMAIL,
-    password_hash=DEFAULT_PWD_HASH,
+    password_hash=DEFAULT_PASSWORD_HASH,
     is_active=True,
 )
 
@@ -58,7 +58,7 @@ async def test_create_user_success():
     mock_db = AsyncMock()
     mock_db.fetch_one.side_effect = side_effect_db_create_user
 
-    user = await crud.create_user(mock_db, DEFAULT_EMAIL, DEFAULT_PWD_HASH)
+    user = await crud.create_user(mock_db, DEFAULT_EMAIL, DEFAULT_PASSWORD_HASH)
 
     assert isinstance(user, UserFromDB)
     assert user.model_dump() == DEFAULT_INACTIVE_USER
@@ -70,7 +70,7 @@ async def test_create_user_failure_db_error():
     mock_db.fetch_one.side_effect = Exception()
 
     with pytest.raises(DBBaseError):
-        await crud.create_user(mock_db, DEFAULT_EMAIL, DEFAULT_PWD_HASH)
+        await crud.create_user(mock_db, DEFAULT_EMAIL, DEFAULT_PASSWORD_HASH)
 
 
 @pytest.mark.asyncio
@@ -79,7 +79,7 @@ async def test_create_user_failure_not_created():
     mock_db.fetch_one.return_value = None
 
     with pytest.raises(UserCrudInsertError):
-        await crud.create_user(mock_db, DEFAULT_EMAIL, DEFAULT_PWD_HASH)
+        await crud.create_user(mock_db, DEFAULT_EMAIL, DEFAULT_PASSWORD_HASH)
 
 
 @pytest.mark.asyncio
@@ -88,7 +88,7 @@ async def test_create_user_failure_email_empty():
     mock_db.fetch_one.side_effect = side_effect_db_create_user
 
     with pytest.raises(ValidationError) as e:
-        await crud.create_user(mock_db, "", DEFAULT_PWD_HASH)
+        await crud.create_user(mock_db, "", DEFAULT_PASSWORD_HASH)
 
     assert len(e.value.errors()) == 1
     error = e.value.errors()[0]
