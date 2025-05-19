@@ -2,6 +2,7 @@ import importlib
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 
 # Exceptions
@@ -22,7 +23,30 @@ class ServiceBaseError(Exception):
 # Handlers loader
 
 
+def register_db_base_exceptions_handlers(app: FastAPI) -> None:
+    @app.exception_handler(DBBaseError)
+    async def handle_db_generic_error(request, exception):
+        return JSONResponse(
+            status_code=exception.status_code,
+            content={"detail": str(exception)},
+        )
+
+
+def register_service_base_exceptions_handlers(app: FastAPI) -> None:
+    @app.exception_handler(ServiceBaseError)
+    async def handle_service_generic_error(request, exception):
+        return JSONResponse(
+            status_code=exception.status_code,
+            content={"detail": str(exception)},
+        )
+
+
 def register_all_exception_handlers(app: FastAPI):
+    # static imports
+    register_db_base_exceptions_handlers(app)
+    register_service_base_exceptions_handlers(app)
+
+    # dynamic imports
     ignore = ["tests"]
     base_path = Path(__file__).resolve().parents[0]
     for module_path in base_path.iterdir():

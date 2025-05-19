@@ -1,5 +1,6 @@
 from databases import Database
 
+from src.exceptions import DBBaseError
 from src.user.exceptions import (
     UserCrudInsertError,
     UserCrudUpdateIsActiveError,
@@ -27,13 +28,16 @@ async def create_user(
         ;
     """
 
-    row = await db.fetch_one(
-        query,
-        {
-            "email": email,
-            "password_hash": password_hash,
-        },
-    )
+    try:
+        row = await db.fetch_one(
+            query,
+            {
+                "email": email,
+                "password_hash": password_hash,
+            },
+        )
+    except Exception as e:
+        raise DBBaseError from e
 
     if not row:
         raise UserCrudInsertError
@@ -57,12 +61,15 @@ async def get_user_by_email(
         ;
     """
 
-    row = await db.fetch_one(
-        query,
-        {
-            "email": email,
-        },
-    )
+    try:
+        row = await db.fetch_one(
+            query,
+            {
+                "email": email,
+            },
+        )
+    except Exception as e:
+        raise DBBaseError from e
 
     if not row:
         return None
@@ -73,7 +80,7 @@ async def get_user_by_email(
 async def update_user_is_active(
     db: Database,
     user_id: int,
-    is_active: bool = True,
+    is_active: bool,
 ) -> UserFromDB | None:
     """
     Activate or deactivate a user.
@@ -87,13 +94,16 @@ async def update_user_is_active(
         ;
     """
 
-    row = await db.fetch_one(
-        query,
-        {
-            "user_id": user_id,
-            "is_active": is_active,
-        },
-    )
+    try:
+        row = await db.fetch_one(
+            query,
+            {
+                "user_id": user_id,
+                "is_active": is_active,
+            },
+        )
+    except Exception as e:
+        raise DBBaseError from e
 
     if not row:
         raise UserCrudUpdateIsActiveError
@@ -120,13 +130,16 @@ async def create_user_verification(
         ;
     """
 
-    row = await db.fetch_one(
-        query,
-        {
-            "user_id": user_id,
-            "code": code,
-        },
-    )
+    try:
+        row = await db.fetch_one(
+            query,
+            {
+                "user_id": user_id,
+                "code": code,
+            },
+        )
+    except Exception as e:
+        raise DBBaseError from e
 
     if not row:
         raise UserVerificationCrudInsertError
@@ -153,13 +166,16 @@ async def get_valid_user_verification(
         ;
     """
 
-    row = await db.fetch_one(
-        query,
-        {
-            "user_id": user_id,
-            "code": code,
-        },
-    )
+    try:
+        row = await db.fetch_one(
+            query,
+            {
+                "user_id": user_id,
+                "code": code,
+            },
+        )
+    except Exception as e:
+        raise DBBaseError from e
 
     if not row:
         return None
