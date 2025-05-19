@@ -1,67 +1,16 @@
-from datetime import datetime
 from unittest.mock import patch
 
 import databases.core
 import pytest
-from databases import Database
 
 from src.user.authentication import verify_password, get_current_user
-from src.user.schemas import UserFromDB, UserVerificationFromDB
 from src.user.tests.assertions import assert_register_ok, assert_activate_ok
+from src.user.tests.mocks.crud import (
+    side_effect_crud_create_user,
+    side_effect_crud_create_verification,
+)
 from src.user.tests.utils import activate_user, register_user
 from src.user.utils import is_valid_verification_code
-
-
-def side_effect_create(
-    db: Database,
-    email: str,
-    pwd_hash: str,
-) -> UserFromDB:
-    return UserFromDB(
-        id=1,
-        email=email,
-        password_hash=pwd_hash,
-        is_active=False,
-    )
-
-
-def side_effect_create_verification(
-    db: Database,
-    user_id: int,
-    code: str,
-) -> UserVerificationFromDB:
-    return UserVerificationFromDB(
-        id=1,
-        user_id=user_id,
-        code=code,
-        created_at=datetime.now(),
-    )
-
-
-def return_value_user_verification(
-    user_id: int,
-    code: str,
-) -> UserVerificationFromDB:
-    return UserVerificationFromDB(
-        id=1,
-        user_id=user_id,
-        code=code,
-        created_at=datetime.now(),
-    )
-
-
-def return_value_user(
-    id_: int,
-    email: str,
-    pwd_hash: str,
-    is_active: bool,
-):
-    return UserFromDB(
-        id=id_,
-        email=email,
-        password_hash=pwd_hash,
-        is_active=is_active,
-    )
 
 
 @patch("src.user.service.send_confirmation_email.delay")
@@ -88,8 +37,8 @@ async def test_user_register_and_activate(
     # ---------------
     # Registration
     # ---------------
-    mock_create_user.side_effect = side_effect_create
-    mock_create_user_verification.side_effect = side_effect_create_verification
+    mock_create_user.side_effect = side_effect_crud_create_user
+    mock_create_user_verification.side_effect = side_effect_crud_create_verification
 
     register_response = await register_user(
         client,
