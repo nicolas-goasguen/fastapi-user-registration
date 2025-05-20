@@ -8,12 +8,12 @@ from src.user.schemas import UserFromDB, UserVerificationFromDB
 def side_effect_crud_create_user(
     db: Database,
     email: str,
-    pwd_hash: str,
+    password_hash: str,
 ) -> UserFromDB:
     return UserFromDB(
         id=1,
         email=email,
-        password_hash=pwd_hash,
+        password_hash=password_hash,
         is_active=False,
     )
 

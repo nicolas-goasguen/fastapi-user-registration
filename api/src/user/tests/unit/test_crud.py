@@ -22,6 +22,7 @@ from src.user.tests.unit.assertions import (
     assert_value_error_verification_code,
     assert_value_error_password_hash_invalid,
     assert_value_error_password_hash_empty,
+    assert_value_error_email_invalid,
 )
 
 DEFAULT_ID = 1
@@ -60,6 +61,10 @@ async def test_create_user_success():
 
     user = await crud.create_user(mock_db, DEFAULT_EMAIL, DEFAULT_PASSWORD_HASH)
 
+    mock_db.fetch_one.assert_called_once_with(
+        ANY,
+        {"email": DEFAULT_EMAIL, "password_hash": DEFAULT_PASSWORD_HASH},
+    )
     assert isinstance(user, UserFromDB)
     assert user.model_dump() == DEFAULT_INACTIVE_USER
 
@@ -90,10 +95,7 @@ async def test_create_user_failure_email_empty():
     with pytest.raises(ValidationError) as e:
         await crud.create_user(mock_db, "", DEFAULT_PASSWORD_HASH)
 
-    assert len(e.value.errors()) == 1
-    error = e.value.errors()[0]
-    assert error["loc"] == ("email",)
-    assert "value is not a valid email address" in error["msg"]
+    assert_value_error_email_invalid(e.value.errors())
 
 
 @pytest.mark.asyncio
@@ -142,6 +144,10 @@ async def test_get_user_by_email_success():
 
     user = await crud.get_user_by_email(mock_db, DEFAULT_EMAIL)
 
+    mock_db.fetch_one.assert_called_once_with(
+        ANY,
+        {"email": DEFAULT_EMAIL},
+    )
     assert isinstance(user, UserFromDB)
     assert user.model_dump() == DEFAULT_INACTIVE_USER
 
@@ -162,6 +168,10 @@ async def test_get_user_by_email_failure_not_found():
 
     user = await crud.get_user_by_email(mock_db, DEFAULT_EMAIL)
 
+    mock_db.fetch_one.assert_called_once_with(
+        ANY,
+        {"email": DEFAULT_EMAIL},
+    )
     assert user is None
 
 
@@ -172,6 +182,10 @@ async def test_update_user_is_active_success():
 
     user = await crud.update_user_is_active(mock_db, DEFAULT_ID, True)
 
+    mock_db.fetch_one.assert_called_once_with(
+        ANY,
+        {"user_id": DEFAULT_ID, "is_active": True},
+    )
     assert isinstance(user, UserFromDB)
     assert user.model_dump() == DEFAULT_ACTIVE_USER
 
@@ -205,6 +219,10 @@ async def test_create_user_verification_success():
     )
     datetime_after = datetime.now()
 
+    mock_db.fetch_one.assert_called_once_with(
+        ANY,
+        {"user_id": DEFAULT_ID, "code": DEFAULT_CODE},
+    )
     assert isinstance(verification, UserVerificationFromDB)
     assert verification.model_dump() == DEFAULT_EXPECTED_USER_VERIFICATION
     assert datetime_before < verification.created_at < datetime_after
@@ -281,6 +299,10 @@ async def test_get_valid_user_verification_success():
         mock_db, DEFAULT_ID, DEFAULT_CODE
     )
 
+    mock_db.fetch_one.assert_called_once_with(
+        ANY,
+        {"user_id": DEFAULT_ID, "code": DEFAULT_CODE},
+    )
     assert isinstance(verification, UserVerificationFromDB)
     assert verification.model_dump() == DEFAULT_USER_VERIFICATION
 
@@ -303,4 +325,8 @@ async def test_get_valid_user_verification_failure_not_found():
         mock_db, DEFAULT_ID, DEFAULT_CODE
     )
 
+    mock_db.fetch_one.assert_called_once_with(
+        ANY,
+        {"user_id": DEFAULT_ID, "code": DEFAULT_CODE},
+    )
     assert verification is None
