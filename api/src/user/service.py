@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
 from databases import Database
-from src.auth.utils import hash_password
 
 import src.user.crud as user_crud
+from src.auth.utils import hash_password
 from src.user.exceptions import (
     UserAlreadyRegisteredError,
     UserAlreadyActivatedError,
@@ -47,7 +47,7 @@ async def register_user(
 async def activate_user(
     db: Database,
     user: UserPublic,
-    verification_code_in: UserVerificationActivate,
+    verification_in: UserVerificationActivate,
 ) -> UserPublic:
     """
     Activate authenticated user using a verification code if valid.
@@ -57,7 +57,7 @@ async def activate_user(
 
     async with db.transaction():
         valid_verification = await user_crud.get_valid_user_verification(
-            db, user.id, verification_code_in.code
+            db, user.id, verification_in.code
         )
         if not valid_verification:
             raise UserVerificationCodeInvalidError
