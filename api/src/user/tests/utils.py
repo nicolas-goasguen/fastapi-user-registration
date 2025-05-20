@@ -13,12 +13,12 @@ MAILDEV_API_URL = (
 )
 
 
-async def register_user(client, email: str, password: str):
+async def post_register_user(client, email: str, password: str):
     credentials = {"email": email, "password": password}
     return await client.post("/users/register", json=credentials)
 
 
-async def activate_user(client, email: str, password: str, code: str):
+async def post_activate_user(client, email: str, password: str, code: str):
     auth = get_auth_from_credentials(email, password)
     return await client.patch(
         "/users/activate",

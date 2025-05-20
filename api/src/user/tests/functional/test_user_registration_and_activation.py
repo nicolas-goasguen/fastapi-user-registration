@@ -10,7 +10,7 @@ from src.user.tests.mocks.crud import (
     side_effect_crud_create_user,
     side_effect_crud_create_verification,
 )
-from src.user.tests.utils import activate_user, register_user
+from src.user.tests.utils import post_activate_user, post_register_user
 from src.user.utils import is_valid_verification_code
 
 
@@ -41,7 +41,7 @@ async def test_user_register_and_activate(
     mock_create_user.side_effect = side_effect_crud_create_user
     mock_create_user_verification.side_effect = side_effect_crud_create_verification
 
-    register_response = await register_user(
+    register_response = await post_register_user(
         client,
         fake_inactive_user.email,
         fake_user_password,
@@ -80,7 +80,7 @@ async def test_user_register_and_activate(
     mock_get_valid_user_verification.return_value = fake_user_verification
     mock_update_user_is_active.return_value = fake_active_user
 
-    activate_response = await activate_user(
+    activate_response = await post_activate_user(
         client,
         fake_inactive_user.email,
         fake_user_password,
