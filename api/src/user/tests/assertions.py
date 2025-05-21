@@ -89,3 +89,12 @@ async def assert_only_one_correct_mail_sent(credentials, verification_data, emai
     new_emails = await get_user_new_emails(credentials, emails)
     assert len(new_emails) == 1
     assert get_code_from_email(new_emails[0]) == verification_data["code"]
+
+
+def assert_warning_logged(caplog, expected_message: str, logger_name: str):
+    logs = [
+        r for r in caplog.records if r.levelname == "WARNING" and r.name == logger_name
+    ]
+    assert any(
+        expected_message in r.message for r in logs
+    ), f"Expected warning '{expected_message}' not found in logs for logger '{logger_name}'"

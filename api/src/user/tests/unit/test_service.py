@@ -10,7 +10,9 @@ from src.user.exceptions import (
     UserVerificationCodeInvalidError,
 )
 from src.user.schemas import UserPublic
+from src.user.service import logger as service_logger
 from src.user.service import register_user, activate_user
+from src.user.tests.assertions import assert_warning_logged
 from src.user.tests.conftest import (
     fake_router_inactive_user,
     fake_router_active_user,
@@ -96,6 +98,39 @@ async def test_register_failure_already_registered(
         await register_user(db=mock_db, user_in=fake_router_user_register)
 
 
+@patch("src.user.service.send_verification_email.delay")
+@patch("src.user.service.user_crud.create_user_verification")
+@patch("src.user.service.user_crud.create_user")
+@patch("src.user.service.user_crud.get_user_by_email")
+@pytest.mark.asyncio
+async def test_register_failure_email_task_error(
+    mock_crud_get_user_by_email,
+    mock_crud_create_user,
+    mock_crud_create_user_verification,
+    mock_task_send_verification_email,
+    mock_db,
+    fake_user_password,
+    fake_crud_inactive_user,
+    fake_crud_verification,
+    fake_router_user_register,
+    fake_router_inactive_user,
+    caplog,
+):
+    mock_crud_get_user_by_email.return_value = None
+    mock_crud_create_user.return_value = fake_crud_inactive_user
+    mock_crud_create_user_verification.return_value = fake_crud_verification
+    mock_task_send_verification_email.side_effect = Exception("fail")
+
+    await register_user(
+        db=mock_db,
+        user_in=fake_router_user_register,
+    )
+
+    assert_warning_logged(
+        caplog, "Failed to enqueue verification email", service_logger.name
+    )
+
+
 @patch("src.user.service.send_confirmation_email.delay")
 @patch("src.user.service.user_crud.update_user_is_active")
 @patch("src.user.service.user_crud.get_valid_user_verification")
@@ -114,7 +149,6 @@ async def test_activate_success(
     fake_router_verification_activate,
 ):
     fake_crud_user = fake_crud_inactive_user
-
     app.dependency_overrides[get_current_user] = lambda: fake_crud_user
 
     mock_crud_get_valid_user_verification.return_value = fake_crud_verification
@@ -160,7 +194,6 @@ async def test_activate_failure_already_activated(
     fake_router_verification_activate,
 ):
     fake_crud_user = fake_crud_active_user
-
     app.dependency_overrides[get_current_user] = lambda: fake_crud_user
 
     with pytest.raises(UserAlreadyActivatedError):
@@ -183,7 +216,6 @@ async def test_activate_failure_verification_not_found(
     fake_router_verification_activate,
 ):
     fake_crud_user = fake_crud_inactive_user
-
     app.dependency_overrides[get_current_user] = lambda: fake_crud_user
 
     mock_crud_get_valid_user_verification.return_value = None
@@ -211,7 +243,6 @@ async def test_activate_failure_verification_expired(
     fake_router_verification_activate,
 ):
     fake_crud_user = fake_crud_inactive_user
-
     app.dependency_overrides[get_current_user] = lambda: fake_crud_user
 
     mock_crud_get_valid_user_verification.return_value = fake_crud_expired_verification
@@ -223,3 +254,38 @@ async def test_activate_failure_verification_expired(
             user=fake_crud_user,
             verification_in=fake_router_verification_activate,
         )
+
+
+@patch("src.user.service.send_confirmation_email.delay")
+@patch("src.user.service.user_crud.update_user_is_active")
+@patch("src.user.service.user_crud.get_valid_user_verification")
+@pytest.mark.asyncio
+async def test_activate_failure_email_task_error(
+    mock_crud_get_valid_user_verification,
+    mock_crud_update_user_is_active,
+    mock_task_send_verification_email,
+    app,
+    mock_db,
+    fake_crud_inactive_user,
+    fake_crud_active_user,
+    fake_crud_verification,
+    fake_router_verification_activate,
+    fake_router_active_user,
+    caplog,
+):
+    fake_crud_user = fake_crud_inactive_user
+    app.dependency_overrides[get_current_user] = lambda: fake_crud_user
+
+    mock_crud_get_valid_user_verification.return_value = fake_crud_verification
+    mock_crud_update_user_is_active.return_value = fake_crud_active_user
+    mock_task_send_verification_email.side_effect = Exception()
+
+    await activate_user(
+        db=mock_db,
+        user=fake_crud_user,
+        verification_in=fake_router_verification_activate,
+    )
+
+    assert_warning_logged(
+        caplog, "Failed to enqueue confirmation email", service_logger.name
+    )

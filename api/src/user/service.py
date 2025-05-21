@@ -4,6 +4,7 @@ from databases import Database
 
 import src.user.crud as user_crud
 from src.auth.utils import hash_password
+from src.logging import get_logger
 from src.user.exceptions import (
     UserAlreadyRegisteredError,
     UserAlreadyActivatedError,
@@ -19,6 +20,8 @@ from src.user.tasks.email import (
     send_verification_email,
 )
 from src.user.utils import generate_random_4_digits
+
+logger = get_logger(__name__)
 
 
 async def register_user(
@@ -39,7 +42,15 @@ async def register_user(
         code = generate_random_4_digits()
         verification = await user_crud.create_user_verification(db, user.id, code)
 
-    send_verification_email.delay(user.email, verification.code)
+    logger.info(
+        f"User ID {user.id} registered, verification code ID {verification.id} created."
+    )
+    try:
+        send_verification_email.delay(user.email, verification.code)
+    except Exception as e:
+        logger.warning(
+            f"Failed to enqueue verification email for user ID {user.id}: {e}"
+        )
 
     return UserPublic(**user.model_dump())
 
@@ -68,6 +79,12 @@ async def activate_user(
             db, user.id, is_active=True
         )
 
-    send_confirmation_email.delay(activated_user.email)
+    logger.info(f"User ID {user.id} activated successfully.")
+    try:
+        send_confirmation_email.delay(activated_user.email)
+    except Exception as e:
+        logger.warning(
+            f"Failed to enqueue confirmation email for user ID {activated_user.id}: {e}"
+        )
 
     return UserPublic(**activated_user.model_dump())
