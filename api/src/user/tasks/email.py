@@ -2,9 +2,13 @@ import asyncio
 from email.message import EmailMessage
 
 import aiosmtplib
+from aiosmtplib.errors import SMTPException, SMTPConnectError
 from celery import shared_task
 
 from src.config import smtp_settings as settings
+from src.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 async def send_email(to_, subject, body):
@@ -23,18 +27,19 @@ async def send_email(to_, subject, body):
     )
 
 
-@shared_task(bind=True, default_retry_delay=5, time_limit=50)
+@shared_task(bind=True, default_retry_delay=5, time_limit=50, max_retries=5)
 def send_verification_email(self, to_, code: str):
     to_ = to_
     subject = f"Your verification code: {code}"
     body = f"Please use this code to verify your registration: {code}. This code is valid for 1 minute."
     try:
         asyncio.run(send_email(to_, subject, body))
-    except Exception as e:  # todo: more precise catch
+    except (SMTPException, SMTPConnectError) as e:
+        logger.warning(f"Verification email failed for {to_}: {e}")
         raise self.retry(exc=e)
 
 
-@shared_task(bind=True, default_retry_delay=5, time_limit=50)
+@shared_task(bind=True, default_retry_delay=5, time_limit=50, max_retries=5)
 def send_confirmation_email(self, to_):
     to_ = to_
     subject = f"Your account has been activated."
