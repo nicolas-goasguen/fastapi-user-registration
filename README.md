@@ -93,27 +93,21 @@ Make sure you have the following installed:
 
 ### Environment File
 
-Only a file named `.env` is automatically loaded by Docker Compose. If you want to use `.env.dev` or another custom
-file, you must explicitly specify it using the `--env-file` option.
+You can use the default `.env.example` file in the following steps or create your custom environment file:
 
-For example:
+```bash
+cp .env.example <your-env-file>
+```
+
+> You can modify the file according to your needs, and create a file for each environment
+> (for example: development and production)
+
+⚠️ **Important**: Docker Compose loads the environment file automatically if it's named `.env`.  
+If your environment file has a different name, you must include it explicitly in each command, for example:
 
 ```bash
 docker compose --env-file <your-env-file> up --build
 ```
-
-> Replace `<your-env-file>` with the name of your environment file (e.g., `.env.dev`, `.env.prod`). This is required if
-> your file is not named exactly `.env`.
-
-Alternatively, you can rename your file to `.env` to have it picked up automatically.
-
-You can create a custom one:
-
-```bash
-cp .env.example .env.dev
-```
-
-Modify it according to your needs.
 
 ## Usage
 
@@ -125,21 +119,15 @@ Use the default `docker-compose.override.yml` to enable volume mounting and code
 docker compose --env-file <your-env-file> up --build
 ```
 
-> Replace `<your-env-file>` with the name of your environment file (e.g., `.env.dev`, `.env.prod`). This is required if
-> your file is not named exactly `.env`.
-
-In this mode, the development server watches your code and restarts automatically on changes.
+In this mode, the override compose file allows the server to watch your code and restarts automatically on changes.
 
 ### Start in Production Mode (without override)
 
-This uses only `docker-compose.yml`:
+This only uses `docker-compose.yml`, ignoring the override file:
 
 ```bash
 docker compose --env-file <your-env-file> -f docker-compose.yml up --build
 ```
-
-> Replace `<your-env-file>` with the name of your environment file (e.g., `.env.dev`, `.env.prod`). This is required if
-> your file is not named exactly `.env`.
 
 ### Accessing the Services
 
