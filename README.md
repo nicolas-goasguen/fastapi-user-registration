@@ -1,27 +1,25 @@
 # User Registration API
 
-This repository contains an implementation of API user registration and verification.
+This repository provides an API for user registration and email verification using FastAPI.
 
 ## Features
 
-* Create a user with an email and a password.
-* Email the user with a 4 digits code.
-* Activate a user account with the 4 digits code received using basic authentication.
-* The user has only one minute to use this code. An error is raised if used after that.
-
-##          
+- Register a user with email and password
+- Send a 4-digit verification code via email
+- Activate a user account using HTTP Basic Auth with the received code
+- The verification code is valid for 1 minute only
 
 ## Architecture
 
-### Docker services architecture
+### Docker Services
 
-This backend project is structured in Docker services as follows:
+This project is structured into the following Docker services:
 
-- **FastAPI**: The Python backend API to handle user registration and activation.
-- **PostgreSQL**: The SQL database to store users and verification data.
-- **MailDev**: The SMTP testing service to simulate user email verification.
-- **RabbitMQ**: The message broker used to queue asynchronous tasks.
-- **Celery Worker**: The worker that processes background tasks from the queue.
+- **FastAPI**: Handles HTTP requests and business logic
+- **PostgreSQL**: Stores user and verification data
+- **MailDev**: Simulates an SMTP email server
+- **RabbitMQ**: Message broker for background tasks
+- **Celery Worker**: Processes asynchronous tasks
 
 ```mermaid
 architecture-beta
@@ -48,21 +46,15 @@ architecture-beta
     localhost:T <-- B:junction_host_email    
 ```
 
-### API code architecture
+### Codebase Structure
 
-The application is organized in a modular way under the `src/` folder:
+The application follows a modular layout inside `src/`:
 
-- **main.py**: Entry point to launch the FastAPI app.
-- **auth/**: Contains utilities and dependencies related to authentication.
-    - `utils.py`: Basic authentication helpers.
-    - `dependencies.py`: FastAPI dependencies for authentication.
-- **user/**: Manages user-related features.
-    - `schemas.py`, `crud.py`, `router.py`, `service.py`, `tasks/email.py`, `exceptions.py`, `utils.py`: Complete user
-      logic including email verification.
-    - `tests/`: Extensive test coverage including unit, integration, functional and e2e layers.
-- **workers/**: Celery worker configuration (`celery.py`).
-- **config.py**, **database.py**, **exceptions.py**, **logging.py**, **dependencies.py**: Core configurations and shared
-  infrastructure.
+- `main.py`: FastAPI app entry point
+- `auth/`: Authentication-related utilities and dependencies
+- `user/`: User logic including schemas, service, tasks, and routes
+- `workers/`: Celery configuration
+- Shared modules: `config.py`, `database.py`, `exceptions.py`, `logging.py`
 
 ```mermaid
 graph TD;
@@ -90,122 +82,95 @@ graph TD;
     end
 ```
 
-This layout separates concerns clearly and supports scalable testing and feature development.
-
 ## Setup
 
 ### Prerequisites
 
-- Install [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/).
+Make sure you have the following installed:
 
-### (Optional) Create a custom .env file
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-By default, the project uses the `.env.example` file. If needed, you can create a custom environment file.
+### Environment File
 
-```console
-foo@bar:~$ cp .env.example <custom_env_file>
+Only a file named `.env` is automatically loaded by Docker Compose. If you want to use `.env.dev` or another custom
+file, you must explicitly specify it using the `--env-file` option.
+
+For example:
+
+```bash
+docker compose --env-file <your-env-file> up --build
 ```
 
-Then, open and modify the custom environment file to fit your needs.
+> Replace `<your-env-file>` with the name of your environment file (e.g., `.env.dev`, `.env.prod`). This is required if
+> your file is not named exactly `.env`.
+
+Alternatively, you can rename your file to `.env` to have it picked up automatically.
+
+You can create a custom one:
+
+```bash
+cp .env.example .env.dev
+```
+
+Modify it according to your needs.
 
 ## Usage
 
-### Start the environment
+### Start in Development Mode (with override)
 
-> [!IMPORTANT]
-> Ensure that your environment file is properly configured before running the app.
+Use the default `docker-compose.override.yml` to enable volume mounting and code reload:
 
-To start the application using the default configuration:
-
-```console
-foo@bar:~$ docker-compose --env-file .env.example up --build
+```bash
+docker compose --env-file <your-env-file> up --build
 ```
 
-Once running, access the services from your web browser:
+> Replace `<your-env-file>` with the name of your environment file (e.g., `.env.dev`, `.env.prod`). This is required if
+> your file is not named exactly `.env`.
 
-- **API**: `http://localhost:<EXPOSED_API_PORT>/docs`
-- **Mail**: `http://localhost:<EXPOSED_SMTP_WEB_PORT>`
+In this mode, the development server watches your code and restarts automatically on changes.
 
-<details>
-  <summary>(Alternative) Command for custom environment file</summary>
-  If you have created a custom environment file, specify it as follows:
+### Start in Production Mode (without override)
 
-  ```console
-  foo@bar:~$ docker-compose --env-file <custom_env_file> up --build
-  ```
+This uses only `docker-compose.yml`:
 
-</details>
-
-### Run tests
-
-> [!CAUTION]
-> This will create random test data. Do NOT run in a production environment.
-
-To run the tests on the environment:
-
-```console
-foo@bar:~$ docker-compose --env-file .env.example exec api pytest
+```bash
+docker compose --env-file <your-env-file> -f docker-compose.yml up --build
 ```
 
-You'll now see the logs of your running services in the terminal.
+> Replace `<your-env-file>` with the name of your environment file (e.g., `.env.dev`, `.env.prod`). This is required if
+> your file is not named exactly `.env`.
 
-<details>
-  <summary>(Alternative) Command for custom environment file</summary>
-  If you have created a custom environment file, specify it as follows:
+### Accessing the Services
 
-  ```console
-  foo@bar:~$ docker-compose --env-file <custom_env_file> exec api pytest
-  ```
+- **API Docs**: http://localhost:<EXPOSED_API_PORT>/docs
+- **MailDev UI**: http://localhost:<EXPOSED_SMTP_WEB_PORT>
 
-</details>
+## Running Tests
 
-### Stop the environment
-
-To stop the running services:
-
-```console
-foo@bar:~$ docker-compose --env-file .env.example down
+```bash
+docker compose exec api pytest
 ```
 
-<details>
-  <summary>(Alternative) Command for custom environment file</summary>
-  If you have created a custom environment file, specify it as follows:
+## Cleanup
 
-  ```console
-  foo@bar:~$ docker-compose --env-file <custom_env_file> down
-  ```
+### Stop all services
 
-</details>
-
-### Clean the environment
-
-> [!CAUTION]
-> This will erase all stored data. Do NOT run in a production environment.
-
-To stop and remove persistent storage volumes:
-
-```console
-foo@bar:~$ docker-compose --env-file .env.example down -v
+```bash
+docker compose down
 ```
 
-<details>
-  <summary>(Alternative) Command for custom environment file</summary>
-  If you have created a custom environment file, specify it as follows:
+### Remove all volumes (irreversible)
 
-  ```console
-  foo@bar:~$ docker-compose --env-file <custom_env_file> down -v
-  ```
+```bash
+docker compose down -v
+```
 
-</details>
+## Possible Improvements
 
-## Possible improvements
-
-Here are some potential improvements for this project:
-
-- **Documentation**: Add docstrings on schemas, methods, routes and returned values for API documentation.
-- **Security**: Implement some advanced security strategies to protect against potential attacks (Timing Attack,
-  DDoS, ...).
+- Add docstrings to models, endpoints, and services for better documentation.
+- Improve security (e.g., timing attack protection, request throttling).
 
 ## License
 
-The User Registration API is licensed under the terms of the MIT license.
+MIT
